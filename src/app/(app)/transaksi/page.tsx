@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatRupiah, formatTanggalPendek, formatJam } from "@/lib/format";
+import { formatRupiah, formatHariTanggalJam } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -32,22 +32,26 @@ export default async function TransaksiPage() {
           <Link
             key={t.id}
             href={`/transaksi/${t.id}`}
-            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
+            className="flex items-start justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
           >
-            <div>
+            <div className="min-w-0">
               <p className="font-medium text-gray-900">{t.customer_name}</p>
-              <p className="text-xs text-gray-500">
-                {formatTanggalPendek(t.transaction_date)} · {formatJam(t.created_at)} ·{" "}
-                <span
-                  className={
-                    t.payment_method === "tunai" ? "text-brand-600" : "text-blue-600"
-                  }
-                >
-                  {t.payment_method === "tunai" ? "Tunai" : "Non-tunai"}
-                </span>
+              <p className="mt-0.5 text-xs text-gray-500">
+                {formatHariTanggalJam(t.transaction_date, t.created_at)}
               </p>
+              <span
+                className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                  t.payment_method === "tunai"
+                    ? "bg-brand-50 text-brand-700"
+                    : "bg-blue-50 text-blue-700"
+                }`}
+              >
+                {t.payment_method === "tunai" ? "Tunai" : "Non-tunai"}
+              </span>
             </div>
-            <p className="font-semibold text-gray-900">{formatRupiah(t.total_amount)}</p>
+            <p className="shrink-0 font-semibold text-gray-900">
+              {formatRupiah(t.total_amount)}
+            </p>
           </Link>
         ))}
       </div>

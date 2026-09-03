@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { formatRupiah, formatTanggalPendek } from "@/lib/format";
+import { formatRupiah, formatHariTanggalJam } from "@/lib/format";
 import { DeleteTransactionButton } from "./DeleteTransactionButton";
 
 export default async function TransaksiDetailPage({ params }: { params: { id: string } }) {
@@ -10,7 +10,7 @@ export default async function TransaksiDetailPage({ params }: { params: { id: st
   const { data: transaction } = await supabase
     .from("transactions")
     .select(
-      "id, transaction_date, customer_name, payment_method, total_amount, total_cost, total_profit"
+      "id, transaction_date, customer_name, payment_method, total_amount, total_cost, total_profit, created_at"
     )
     .eq("id", params.id)
     .single();
@@ -32,17 +32,12 @@ export default async function TransaksiDetailPage({ params }: { params: { id: st
       </Link>
 
       <div className="mt-2 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-xs text-gray-400">Pembeli</p>
-            <p className="font-semibold text-gray-900">{transaction.customer_name}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-400">Tanggal</p>
-            <p className="font-semibold text-gray-900">
-              {formatTanggalPendek(transaction.transaction_date)}
-            </p>
-          </div>
+        <div>
+          <p className="text-xs text-gray-400">Pembeli</p>
+          <p className="text-lg font-semibold text-gray-900">{transaction.customer_name}</p>
+          <p className="mt-1 text-sm text-gray-500">
+            {formatHariTanggalJam(transaction.transaction_date, transaction.created_at)}
+          </p>
         </div>
 
         <span

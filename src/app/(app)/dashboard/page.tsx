@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatRupiah, formatTanggalPendek, formatJam } from "@/lib/format";
+import { formatRupiah, formatHariTanggalJam } from "@/lib/format";
 import { resolvePeriod, formatPeriodLabel } from "@/lib/date-range";
 import { PeriodFilter } from "@/components/reports/PeriodFilter";
 
@@ -146,7 +146,7 @@ export default async function DashboardPage({
                 <div>
                   <p className="text-sm font-medium text-gray-900">{t.customer_name}</p>
                   <p className="text-xs text-gray-500">
-                    {formatTanggalPendek(t.transaction_date)} · {formatJam(t.created_at)}
+                    {formatHariTanggalJam(t.transaction_date, t.created_at)}
                   </p>
                 </div>
                 <p className="text-sm font-semibold text-gray-900">
