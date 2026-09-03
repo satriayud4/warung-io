@@ -1,0 +1,82 @@
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { formatRupiah } from "@/lib/format";
+
+export const dynamic = "force-dynamic";
+
+export default async function ProdukPage() {
+  const supabase = createClient();
+
+  const { data: products } = await supabase
+    .from("products")
+    .select("id, name, cost_price, selling_price, unit, is_active")
+    .order("is_active", { ascending: false })
+    .order("name", { ascending: true });
+
+  return (
+    <div className="mx-auto max-w-2xl">
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold">Produk</h1>
+        <Link
+          href="/produk/baru"
+          className="rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white"
+        >
+          + Tambah Produk
+        </Link>
+      </div>
+
+      {(!products || products.length === 0) && (
+        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
+          <p className="font-medium text-gray-700">Belum ada produk.</p>
+          <p className="mt-1 text-sm text-gray-500">Tambahkan menu pertama Anda.</p>
+        </div>
+      )}
+
+      <div className="mt-4 space-y-2">
+        {(products ?? []).map((p) => {
+          const laba =
+            p.cost_price !== null ? Number(p.selling_price) - Number(p.cost_price) : null;
+
+          return (
+            <Link
+              key={p.id}
+              href={`/produk/${p.id}`}
+              className={`block rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 ${
+                !p.is_active ? "opacity-50" : ""
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-gray-900">
+                    {p.name}
+                    {!p.is_active && (
+                      <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                        Nonaktif
+                      </span>
+                    )}
+                  </p>
+                  <p className="mt-0.5 text-sm text-gray-500">
+                    Jual {formatRupiah(p.selling_price)} / {p.unit}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Modal {p.cost_price !== null ? formatRupiah(p.cost_price) : "belum diisi"}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="text-xs text-gray-400">Laba/unit</p>
+                  <p
+                    className={`font-semibold ${
+                      laba === null ? "text-gray-400" : "text-brand-600"
+                    }`}
+                  >
+                    {laba === null ? "-" : formatRupiah(laba)}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
