@@ -30,7 +30,7 @@ export default async function DashboardPage({
     searchParams.to
   );
 
-  const [{ data: transactions }, { data: expenses }, { data: topProducts }, { data: recent }] =
+  const [{ data: transactions }, { data: expenses }, { data: bestSellersData }, { data: recent }] =
     await Promise.all([
       supabase
         .from("transactions")
@@ -38,9 +38,13 @@ export default async function DashboardPage({
         .gte("transaction_date", from)
         .lte("transaction_date", to),
       supabase.from("expenses").select("amount").gte("expense_date", from).lte("expense_date", to),
-      supabase.rpc("get_sales_by_product", { p_from: from, p_to: to }) as unknown as Promise<{
-        data: ProductSales[] | null;
-      }>,
+      // Menu Terlaris selalu all-time (bukan mengikuti filter periode di
+      // atas) — pakai rentang tanggal sangat lebar lewat fungsi yang sudah
+      // ada, supaya tidak perlu migrasi/fungsi database baru.
+      supabase.rpc("get_sales_by_product", {
+        p_from: "1900-01-01",
+        p_to: "2999-12-31",
+      }) as unknown as Promise<{ data: ProductSales[] | null }>,
       supabase
         .from("transactions")
         .select("id, transaction_date, customer_name, total_amount, created_at")
@@ -62,7 +66,7 @@ export default async function DashboardPage({
     { label: "Laba Bersih", value: labaBersih, tone: "text-brand-700" },
   ];
 
-  const bestSellers = (topProducts ?? []).slice(0, 3);
+  const bestSellers = (bestSellersData ?? []).slice(0, 3);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -92,10 +96,11 @@ export default async function DashboardPage({
       )}
 
       <div>
-        <h2 className="mb-2 text-sm font-semibold text-gray-700">Menu Terlaris</h2>
+        <h2 className="text-sm font-semibold text-gray-700">Menu Terlaris</h2>
+        <p className="mb-2 text-xs text-gray-400">Sepanjang waktu (semua transaksi)</p>
         {bestSellers.length === 0 ? (
           <p className="rounded-2xl bg-white p-4 text-sm text-gray-400 ring-1 ring-gray-100">
-            Belum ada penjualan di periode ini.
+            Belum ada penjualan tercatat.
           </p>
         ) : (
           <div className="space-y-2">
@@ -110,7 +115,9 @@ export default async function DashboardPage({
                   </span>
                   <span className="font-medium text-gray-800">{p.product_name}</span>
                 </div>
-                <span className="text-sm text-gray-500">{Number(p.quantity)} porsi</span>
+                <span className="text-sm text-gray-500">
+                  {Number(p.quantity).toLocaleString("id-ID")} porsi
+                </span>
               </div>
             ))}
           </div>
