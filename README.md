@@ -45,6 +45,11 @@ Offline support (bisa dipakai saat internet putus) belum dikerjakan.
   transaksi pada periode terpilih lengkap dengan tanggal, hari, jam, nama
   pembeli, daftar produk & jumlah, total, dan metode pembayaran, tanpa
   perlu klik satu per satu ke halaman detail.
+- **Export Excel/CSV** (baik per periode maupun per bulan) sekarang ikut
+  membawa rincian ini sebagai sheet/bagian tersendiri — satu baris per
+  produk per transaksi (Tanggal, Hari, Jam, Nama Pembeli, Produk, Jumlah,
+  Harga, Total Transaksi, Metode Pembayaran), jadi bisa difilter/disortir
+  sendiri di Excel, bukan cuma angka ringkasan.
 - Tabel "Penjualan Berdasarkan Menu" di Laporan diganti jadi kartu (bukan
   tabel lebar) supaya tidak perlu geser ke samping di HP.
 - Tombol +/- jumlah dan hapus item di keranjang Kasir diperbesar area

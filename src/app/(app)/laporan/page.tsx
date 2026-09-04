@@ -9,20 +9,12 @@ import {
   computeSummary,
   computeCategoryRows,
   computePaymentBreakdown,
+  flattenDetailedRows,
   type ProductRow,
   type DateRow,
+  type DetailedTransaction,
   type ReportData,
 } from "@/lib/export/report-data";
-
-type DetailedTransaction = {
-  id: string;
-  transaction_date: string;
-  customer_name: string;
-  payment_method: string;
-  total_amount: number;
-  created_at: string;
-  transaction_items: { product_name_snapshot: string; quantity: number; subtotal: number }[];
-};
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +79,7 @@ export default async function LaporanPage({
   const payment = computePaymentBreakdown(txRows);
   const storeName = settings?.store_name || "Warung Saya";
   const periodLabel = formatPeriodLabel(period, from, to);
+  const detailedRows = flattenDetailedRows(detailedTransactions);
 
   const reportData: ReportData = {
     storeName,
@@ -98,6 +91,7 @@ export default async function LaporanPage({
     byDate,
     byCategory: categoryRows,
     payment,
+    detailedRows,
   };
 
   const summaryCards = [

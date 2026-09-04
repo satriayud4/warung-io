@@ -48,6 +48,23 @@ function categoryRows(d: ReportData): (string | number)[][] {
   ];
 }
 
+function detailRows(d: ReportData): (string | number)[][] {
+  return [
+    ["Tanggal", "Hari", "Jam", "Nama Pembeli", "Produk", "Jumlah", "Harga", "Total Transaksi", "Metode Pembayaran"],
+    ...d.detailedRows.map((r) => [
+      r.date,
+      r.day,
+      r.time,
+      r.customer,
+      r.product,
+      r.quantity,
+      rupiah(r.price),
+      rupiah(r.transactionTotal),
+      r.paymentMethod,
+    ]),
+  ];
+}
+
 function slugifyPeriod(from: string, to: string) {
   return from === to ? from : `${from}_${to}`;
 }
@@ -55,6 +72,7 @@ function slugifyPeriod(from: string, to: string) {
 export async function exportReportExcel(data: ReportData) {
   const sheets: XlsSheet[] = [
     { name: "Ringkasan", rows: summaryRows(data) },
+    { name: "Rincian Transaksi", rows: detailRows(data) },
     { name: "Per Menu", rows: productRows(data) },
     { name: "Per Tanggal", rows: dateRows(data) },
     { name: "Pengeluaran", rows: categoryRows(data) },
@@ -66,6 +84,10 @@ export async function exportReportExcel(data: ReportData) {
 export async function exportReportCsv(data: ReportData) {
   const combined: (string | number)[][] = [
     ...summaryRows(data),
+    [],
+    [],
+    ["Rincian Transaksi"],
+    ...detailRows(data),
     [],
     [],
     ["Penjualan per Menu"],

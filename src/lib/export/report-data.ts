@@ -16,6 +16,35 @@ export type DateRow = { sale_date: string; omzet: number; laba: number };
 export type CategoryRow = { category: string; total: number };
 export type PaymentBreakdown = { tunai: number; nontunai: number };
 
+// Satu transaksi lengkap dengan item-itemnya — bentuk "mentah" sebelum
+// diratakan jadi baris per produk untuk export. Dipakai baik oleh Laporan
+// (sudah tersedia lewat props) maupun MonthlyExportSection (fetch sendiri).
+export type DetailedTransaction = {
+  id: string;
+  transaction_date: string;
+  customer_name: string;
+  payment_method: string;
+  total_amount: number;
+  created_at: string;
+  transaction_items: { product_name_snapshot: string; quantity: number; subtotal: number }[];
+};
+
+// Satu baris per produk di dalam satu transaksi — format paling
+// "transparan" untuk dibuka & disortir/difilter di Excel: setiap baris
+// berdiri sendiri dengan tanggal, hari, jam, pembeli, produk, jumlah,
+// harga, total transaksi, dan metode pembayaran.
+export type DetailedRow = {
+  date: string;
+  day: string;
+  time: string;
+  customer: string;
+  product: string;
+  quantity: number;
+  price: number;
+  transactionTotal: number;
+  paymentMethod: string;
+};
+
 export type ReportData = {
   storeName: string;
   periodLabel: string;
@@ -26,6 +55,7 @@ export type ReportData = {
   byDate: DateRow[];
   byCategory: CategoryRow[];
   payment: PaymentBreakdown;
+  detailedRows: DetailedRow[];
 };
 
 export function computeSummary(
@@ -60,4 +90,33 @@ export function computePaymentBreakdown(
     },
     { tunai: 0, nontunai: 0 }
   );
+}
+
+export function flattenDetailedRows(transactions: DetailedTransaction[]): DetailedRow[] {
+  const rows: DetailedRow[] = [];
+
+  for (const t of transactions) {
+    const date = new Date(t.transaction_date + "T00:00:00");
+    const day = date.toLocaleDateString("id-ID", { weekday: "long" });
+    const time = new Date(t.created_at).toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    for (const item of t.transaction_items) {
+      rows.push({
+        date: t.transaction_date,
+        day,
+        time,
+        customer: t.customer_name,
+        product: item.product_name_snapshot,
+        quantity: Number(item.quantity),
+        price: item.quantity > 0 ? Number(item.subtotal) / Number(item.quantity) : 0,
+        transactionTotal: Number(t.total_amount),
+        paymentMethod: t.payment_method === "tunai" ? "Tunai" : "Non-tunai",
+      });
+    }
+  }
+
+  return rows;
 }

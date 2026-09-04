@@ -6,9 +6,11 @@ import {
   computeSummary,
   computeCategoryRows,
   computePaymentBreakdown,
+  flattenDetailedRows,
   type ReportData,
   type ProductRow,
   type DateRow,
+  type DetailedTransaction,
 } from "@/lib/export/report-data";
 import { exportReportExcel, exportReportCsv } from "@/lib/export/generate-files";
 
@@ -40,7 +42,7 @@ export function MonthlyExportSection({ storeName }: { storeName: string }) {
   async function fetchMonthData(): Promise<ReportData> {
     const { from, to, label } = monthRange(month);
 
-    const [txRes, expRes, prodRes, dateRes] = await Promise.all([
+    const [txRes, expRes, prodRes, dateRes, detailRes] = await Promise.all([
       supabase
         .from("transactions")
         .select("total_amount, total_cost, payment_method")
@@ -53,10 +55,20 @@ export function MonthlyExportSection({ storeName }: { storeName: string }) {
         .lte("expense_date", to),
       supabase.rpc("get_sales_by_product", { p_from: from, p_to: to }),
       supabase.rpc("get_sales_by_date", { p_from: from, p_to: to }),
+      supabase
+        .from("transactions")
+        .select(
+          "id, transaction_date, customer_name, payment_method, total_amount, created_at, transaction_items(product_name_snapshot, quantity, subtotal)"
+        )
+        .gte("transaction_date", from)
+        .lte("transaction_date", to)
+        .order("transaction_date", { ascending: false })
+        .order("created_at", { ascending: false }),
     ]);
 
     const transactions = txRes.data ?? [];
     const expenses = expRes.data ?? [];
+    const detailedTransactions = (detailRes.data ?? []) as unknown as DetailedTransaction[];
 
     return {
       storeName,
@@ -68,6 +80,7 @@ export function MonthlyExportSection({ storeName }: { storeName: string }) {
       byDate: (dateRes.data ?? []) as DateRow[],
       byCategory: computeCategoryRows(expenses),
       payment: computePaymentBreakdown(transactions),
+      detailedRows: flattenDetailedRows(detailedTransactions),
     };
   }
 
