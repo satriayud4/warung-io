@@ -2,6 +2,8 @@
 // `period` (and `from`/`to` for custom) from the URL search params, so the
 // filter state is shareable/bookmarkable and needs no client-side state.
 
+import { formatHariTanggalLengkap, formatTanggalSaja } from "./format";
+
 export type Period = "today" | "yesterday" | "7days" | "month" | "custom";
 
 export const PERIOD_OPTIONS: { value: Period; label: string }[] = [
@@ -54,13 +56,9 @@ export function resolvePeriod(
 }
 
 export function formatPeriodLabel(period: Period, from: string, to: string) {
-  const fmt = (s: string) => {
-    const [y, m, d] = s.split("-");
-    return `${d}/${m}/${y}`;
-  };
-
-  if (period === "today") return `Hari ini — ${fmt(from)}`;
-  if (period === "yesterday") return `Kemarin — ${fmt(from)}`;
-  if (from === to) return fmt(from);
-  return `${fmt(from)} – ${fmt(to)}`;
+  // Selalu tampilkan tanggal jelas — tidak pernah hanya "Hari ini"/"Kemarin"
+  // tanpa tanggal, supaya laporan tetap jelas kalau dibuka lagi bulan/tahun
+  // depan.
+  if (from === to) return formatHariTanggalLengkap(from);
+  return `${formatTanggalSaja(from)} – ${formatTanggalSaja(to)}`;
 }

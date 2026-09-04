@@ -28,6 +28,28 @@ bukan data terpisah per akun.
 
 Offline support (bisa dipakai saat internet putus) belum dikerjakan.
 
+## Penyempurnaan terbaru
+
+- **Menu Terlaris** (Dashboard) sekarang **all-time** (bukan mengikuti
+  filter periode), pakai fungsi database khusus
+  `get_top_products_all_time`, dengan ranking bernomor dan jumlah terjual
+  memakai pemisah ribuan ("1.250 porsi").
+- **Semua tampilan tanggal** kini selalu memakai format hari+tanggal
+  lengkap ("Kamis, 3 September 2026"), tidak pernah hanya "Hari ini" atau
+  "Kemarin" tanpa tanggal — berlaku di Dashboard, Transaksi, Pengeluaran,
+  dan Laporan. Transaksi menampilkan hari, tanggal, dan jam sekaligus
+  ("Kamis, 3 September 2026, 14:30"). Tombol filter periode ("Hari
+  ini"/"Kemarin"/dst) tetap ada sebagai pintasan navigasi, tapi hasil yang
+  ditampilkan selalu tanggal penuh.
+- **Laporan** kini punya bagian **Rincian Transaksi** — daftar tiap
+  transaksi pada periode terpilih lengkap dengan tanggal, hari, jam, nama
+  pembeli, daftar produk & jumlah, total, dan metode pembayaran, tanpa
+  perlu klik satu per satu ke halaman detail.
+- Tabel "Penjualan Berdasarkan Menu" di Laporan diganti jadi kartu (bukan
+  tabel lebar) supaya tidak perlu geser ke samping di HP.
+- Tombol +/- jumlah dan hapus item di keranjang Kasir diperbesar area
+  tapnya untuk kenyamanan di layar sentuh.
+
 ## ⚠️ Wajib untuk fitur Lupa Password
 
 Supaya link reset password bisa mengarah balik ke aplikasi Anda (bukan
@@ -68,6 +90,7 @@ mudah:
    - `supabase/migrations/0002_transaction_rpc.sql`
    - `supabase/migrations/0003_reports_rpc.sql`
    - `supabase/migrations/0004_payment_method.sql`
+   - `supabase/migrations/0005_all_time_best_sellers.sql`
 3. Di **Project Settings → API**, salin `Project URL` dan `anon public key`.
 4. (Opsional, untuk auth lebih cepat saat development) di **Authentication →
    Providers → Email**, matikan "Confirm email" supaya bisa langsung login
@@ -146,6 +169,7 @@ supabase/
     0002_transaction_rpc.sql  fungsi create_transaction & update_transaction
     0003_reports_rpc.sql      fungsi agregasi untuk Dashboard & Laporan
     0004_payment_method.sql   kolom payment_method + update fungsi transaksi
+    0005_all_time_best_sellers.sql  fungsi Menu Terlaris all-time
   seed_products.sql          data contoh produk
   reset.sql                  hapus semua tabel (hanya untuk migrasi ulang)
 ```

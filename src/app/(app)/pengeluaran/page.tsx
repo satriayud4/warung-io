@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatRupiah, formatTanggalPendek } from "@/lib/format";
+import { formatRupiah, formatHariTanggalLengkap } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +47,7 @@ export default async function PengeluaranPage() {
                 {e.description || e.category}
               </p>
               <p className="text-xs text-gray-500">
-                {formatTanggalPendek(e.expense_date)} ·{" "}
+                {formatHariTanggalLengkap(e.expense_date)} ·{" "}
                 <span className="rounded-full bg-gray-100 px-2 py-0.5">{e.category}</span>
               </p>
             </div>

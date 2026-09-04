@@ -47,8 +47,8 @@ export default async function PengaturanPage() {
       </div>
 
       <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-5 text-sm text-gray-500">
-        Backup/export data akan tersedia di halaman Laporan (Tahap 3–4), begitu ada transaksi
-        untuk diexport.
+        Backup/export data (Excel, CSV, dan gambar untuk laporan harian) sudah tersedia di
+        halaman Laporan.
       </div>
     </div>
   );

@@ -5,32 +5,29 @@ export function formatRupiah(n: number | null | undefined) {
   return "Rp" + Math.round(n).toLocaleString("id-ID");
 }
 
-export function formatTanggalIndo(date: Date) {
-  return date.toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
 export function formatTanggalPendek(dateStr: string) {
   // dateStr: 'YYYY-MM-DD' -> 'DD/MM/YYYY'
   const [y, m, d] = dateStr.split("-");
   return `${d}/${m}/${y}`;
 }
 
+export function formatTanggalSaja(dateStr: string) {
+  // dateStr: 'YYYY-MM-DD' -> '3 September 2026' (tanpa nama hari)
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+}
+
+export function getNamaHari(dateStr: string) {
+  // dateStr: 'YYYY-MM-DD' -> 'Kamis'
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("id-ID", { weekday: "long" });
+}
+
 export function formatHariTanggalLengkap(dateStr: string) {
   // dateStr: 'YYYY-MM-DD' -> 'Kamis, 3 September 2026'
   // Parsed as local midnight (no "Z") so the calendar day shown always
   // matches transaction_date regardless of the viewer's timezone.
-  const date = new Date(dateStr + "T00:00:00");
-  return date.toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  return `${getNamaHari(dateStr)}, ${formatTanggalSaja(dateStr)}`;
 }
 
 export function formatHariTanggalJam(dateStr: string, isoTime: string) {

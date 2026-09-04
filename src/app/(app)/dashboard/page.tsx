@@ -38,13 +38,12 @@ export default async function DashboardPage({
         .gte("transaction_date", from)
         .lte("transaction_date", to),
       supabase.from("expenses").select("amount").gte("expense_date", from).lte("expense_date", to),
-      // Menu Terlaris selalu all-time (bukan mengikuti filter periode di
-      // atas) — pakai rentang tanggal sangat lebar lewat fungsi yang sudah
-      // ada, supaya tidak perlu migrasi/fungsi database baru.
-      supabase.rpc("get_sales_by_product", {
-        p_from: "1900-01-01",
-        p_to: "2999-12-31",
-      }) as unknown as Promise<{ data: ProductSales[] | null }>,
+      // Menu Terlaris selalu all-time (tidak mengikuti filter periode di
+      // atas) — pakai fungsi database khusus, bukan dihitung di browser,
+      // supaya tetap ringan walau transaksinya sudah ribuan.
+      supabase.rpc("get_top_products_all_time", { p_limit: 3 }) as unknown as Promise<{
+        data: ProductSales[] | null;
+      }>,
       supabase
         .from("transactions")
         .select("id, transaction_date, customer_name, total_amount, created_at")
@@ -66,7 +65,7 @@ export default async function DashboardPage({
     { label: "Laba Bersih", value: labaBersih, tone: "text-brand-700" },
   ];
 
-  const bestSellers = (bestSellersData ?? []).slice(0, 3);
+  const bestSellers = bestSellersData ?? [];
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

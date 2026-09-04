@@ -58,7 +58,8 @@ export default async function TransaksiPage() {
 
       {(transactions ?? []).length === 100 && (
         <p className="mt-3 text-center text-xs text-gray-400">
-          Menampilkan 100 transaksi terbaru. Laporan lengkap akan tersedia di Tahap 3.
+          Menampilkan 100 transaksi terbaru. Untuk melihat rincian per periode (termasuk yang
+          lebih lama), buka halaman Laporan.
         </p>
       )}
     </div>

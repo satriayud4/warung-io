@@ -245,28 +245,31 @@ export function TransactionEditor({
                         {l.qty} × {formatRupiah(l.price)} = {formatRupiah(l.qty * l.price)}
                       </p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-1.5">
+                    <div className="flex shrink-0 items-center gap-1">
                       <button
                         type="button"
                         onClick={() => changeQty(l.product_id, -1)}
-                        className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600"
+                        aria-label={`Kurangi ${l.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-base text-gray-600 active:bg-gray-200"
                       >
                         −
                       </button>
-                      <span className="w-5 text-center text-sm">{l.qty}</span>
+                      <span className="w-6 text-center text-sm">{l.qty}</span>
                       <button
                         type="button"
                         onClick={() => changeQty(l.product_id, 1)}
-                        className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600"
+                        aria-label={`Tambah ${l.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-base text-gray-600 active:bg-gray-200"
                       >
                         +
                       </button>
                       <button
                         type="button"
                         onClick={() => removeLine(l.product_id)}
-                        className="ml-1 text-xs text-red-500"
+                        aria-label={`Hapus ${l.name}`}
+                        className="ml-0.5 flex h-9 w-9 items-center justify-center rounded-full text-xs font-medium text-red-500 active:bg-red-50"
                       >
-                        Hapus
+                        ✕
                       </button>
                     </div>
                   </li>

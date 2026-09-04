@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatHariTanggalJam } from "@/lib/format";
 import { resolvePeriod, formatPeriodLabel } from "@/lib/date-range";
 import { PeriodFilter } from "@/components/reports/PeriodFilter";
 import { SalesChart } from "@/components/reports/SalesChart";
@@ -13,6 +13,16 @@ import {
   type DateRow,
   type ReportData,
 } from "@/lib/export/report-data";
+
+type DetailedTransaction = {
+  id: string;
+  transaction_date: string;
+  customer_name: string;
+  payment_method: string;
+  total_amount: number;
+  created_at: string;
+  transaction_items: { product_name_snapshot: string; quantity: number; subtotal: number }[];
+};
 
 export const dynamic = "force-dynamic";
 
@@ -29,31 +39,48 @@ export default async function LaporanPage({
     searchParams.to
   );
 
-  const [{ data: settings }, { data: transactions }, { data: expenses }, prodRes, dateRes] =
-    await Promise.all([
-      supabase.from("store_settings").select("store_name").eq("id", true).single(),
-      supabase
-        .from("transactions")
-        .select("total_amount, total_cost, total_profit, payment_method")
-        .gte("transaction_date", from)
-        .lte("transaction_date", to),
-      supabase
-        .from("expenses")
-        .select("category, amount")
-        .gte("expense_date", from)
-        .lte("expense_date", to),
-      supabase.rpc("get_sales_by_product", { p_from: from, p_to: to }) as unknown as Promise<{
-        data: ProductRow[] | null;
-      }>,
-      supabase.rpc("get_sales_by_date", { p_from: from, p_to: to }) as unknown as Promise<{
-        data: DateRow[] | null;
-      }>,
-    ]);
+  const [
+    { data: settings },
+    { data: transactions },
+    { data: expenses },
+    prodRes,
+    dateRes,
+    detailRes,
+  ] = await Promise.all([
+    supabase.from("store_settings").select("store_name").eq("id", true).single(),
+    supabase
+      .from("transactions")
+      .select("total_amount, total_cost, total_profit, payment_method")
+      .gte("transaction_date", from)
+      .lte("transaction_date", to),
+    supabase
+      .from("expenses")
+      .select("category, amount")
+      .gte("expense_date", from)
+      .lte("expense_date", to),
+    supabase.rpc("get_sales_by_product", { p_from: from, p_to: to }) as unknown as Promise<{
+      data: ProductRow[] | null;
+    }>,
+    supabase.rpc("get_sales_by_date", { p_from: from, p_to: to }) as unknown as Promise<{
+      data: DateRow[] | null;
+    }>,
+    supabase
+      .from("transactions")
+      .select(
+        "id, transaction_date, customer_name, payment_method, total_amount, created_at, transaction_items(product_name_snapshot, quantity, subtotal)"
+      )
+      .gte("transaction_date", from)
+      .lte("transaction_date", to)
+      .order("transaction_date", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(100) as unknown as Promise<{ data: DetailedTransaction[] | null }>,
+  ]);
 
   const txRows = transactions ?? [];
   const expRows = expenses ?? [];
   const byProduct = prodRes.data ?? [];
   const byDate = dateRes.data ?? [];
+  const detailedTransactions = detailRes.data ?? [];
 
   const summary = computeSummary(txRows, expRows);
   const categoryRows = computeCategoryRows(expRows);
@@ -134,32 +161,86 @@ export default async function LaporanPage({
             Belum ada penjualan di periode ini.
           </p>
         ) : (
-          <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-            <table className="w-full min-w-[420px] text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 text-left text-xs text-gray-500">
-                  <th className="px-3 py-2.5 font-medium">Menu</th>
-                  <th className="px-3 py-2.5 text-right font-medium">Terjual</th>
-                  <th className="px-3 py-2.5 text-right font-medium">Omzet</th>
-                  <th className="px-3 py-2.5 text-right font-medium">Laba</th>
-                </tr>
-              </thead>
-              <tbody>
-                {byProduct.map((p) => (
-                  <tr key={p.product_name} className="border-b border-gray-50 last:border-0">
-                    <td className="px-3 py-2.5 font-medium text-gray-800">{p.product_name}</td>
-                    <td className="px-3 py-2.5 text-right text-gray-600">{Number(p.quantity)}</td>
-                    <td className="px-3 py-2.5 text-right text-gray-900">
-                      {formatRupiah(p.omzet)}
-                    </td>
-                    <td className="px-3 py-2.5 text-right font-medium text-brand-600">
-                      {formatRupiah(p.laba)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {byProduct.map((p) => (
+              <div
+                key={p.product_name}
+                className="rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-gray-100"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate font-medium text-gray-800">{p.product_name}</span>
+                  <span className="shrink-0 text-xs text-gray-500">
+                    {Number(p.quantity).toLocaleString("id-ID")} terjual
+                  </span>
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-sm">
+                  <span className="text-gray-500">{formatRupiah(p.omzet)}</span>
+                  <span className="font-semibold text-brand-600">
+                    Laba {formatRupiah(p.laba)}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
+        )}
+      </div>
+
+      {/* Rincian Transaksi */}
+      <div>
+        <h2 className="mb-2 text-sm font-semibold text-gray-700">Rincian Transaksi</h2>
+        {detailedTransactions.length === 0 ? (
+          <p className="rounded-2xl bg-white p-4 text-sm text-gray-400 ring-1 ring-gray-100">
+            Belum ada transaksi di periode ini.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {detailedTransactions.map((t) => (
+              <div
+                key={t.id}
+                className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium text-gray-900">{t.customer_name}</p>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      {formatHariTanggalJam(t.transaction_date, t.created_at)}
+                    </p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                      t.payment_method === "tunai"
+                        ? "bg-brand-50 text-brand-700"
+                        : "bg-blue-50 text-blue-700"
+                    }`}
+                  >
+                    {t.payment_method === "tunai" ? "Tunai" : "Non-tunai"}
+                  </span>
+                </div>
+
+                <div className="mt-2.5 space-y-1 border-t border-gray-100 pt-2.5 text-sm">
+                  {t.transaction_items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between gap-2 text-gray-600">
+                      <span className="min-w-0 truncate">
+                        {item.product_name_snapshot} × {Number(item.quantity)}
+                      </span>
+                      <span className="shrink-0">{formatRupiah(item.subtotal)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-2.5 flex justify-between border-t border-gray-100 pt-2.5 text-sm font-semibold text-gray-900">
+                  <span>Total</span>
+                  <span>{formatRupiah(t.total_amount)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {detailedTransactions.length === 100 && (
+          <p className="mt-3 text-center text-xs text-gray-400">
+            Menampilkan 100 transaksi pertama pada periode ini. Persempit periode (mis. per
+            minggu/bulan) untuk melihat semuanya.
+          </p>
         )}
       </div>
 
