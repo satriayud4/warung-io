@@ -57,12 +57,11 @@ export default async function DashboardPage({
   const pengeluaran = (expenses ?? []).reduce((s, e) => s + Number(e.amount), 0);
   const labaBersih = labaKotor - pengeluaran;
 
-  const cards = [
+  const secondaryCards = [
     { label: "Omzet", value: omzet, tone: "text-gray-900" },
     { label: "Modal", value: modal, tone: "text-gray-900" },
     { label: "Laba Kotor", value: labaKotor, tone: "text-brand-600" },
     { label: "Pengeluaran", value: pengeluaran, tone: "text-red-600" },
-    { label: "Laba Bersih", value: labaBersih, tone: "text-brand-700" },
   ];
 
   const bestSellers = bestSellersData ?? [];
@@ -76,8 +75,16 @@ export default async function DashboardPage({
 
       <PeriodFilter activePeriod={period} from={from} to={to} />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        {cards.map((c) => (
+      {/* Laba Bersih ditonjolkan sendiri — ini angka paling penting yang
+          ingin dilihat pemilik warung sekilas, tanpa perlu memindai kartu
+          lain dulu. */}
+      <div className="rounded-2xl bg-brand-500 p-5 text-white shadow-sm">
+        <p className="text-xs font-medium text-brand-50">Laba Bersih</p>
+        <p className="mt-1 text-3xl font-bold">{formatRupiah(labaBersih)}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {secondaryCards.map((c) => (
           <div key={c.label} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
             <p className="text-xs font-medium text-gray-500">{c.label}</p>
             <p className={`mt-1 text-lg font-bold ${c.tone}`}>{formatRupiah(c.value)}</p>

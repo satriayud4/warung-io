@@ -43,7 +43,7 @@ export function PeriodFilter({
             <button
               key={opt.value}
               onClick={() => selectPeriod(opt.value)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
+              className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-medium transition ${
                 active ? "bg-brand-500 text-white" : "bg-white text-gray-600 ring-1 ring-gray-200"
               }`}
             >

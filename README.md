@@ -58,6 +58,27 @@ Offline support (bisa dipakai saat internet putus) belum dikerjakan.
 - Tombol +/- jumlah dan hapus item di keranjang Kasir diperbesar area
   tapnya untuk kenyamanan di layar sentuh.
 
+## Optimasi tampilan mobile (terbaru)
+
+- **Bottom nav diperbaiki** — sebelumnya menampilkan 6 tab dalam grid
+  5-kolom (bug peninggalan saat Laporan ditambahkan di Tahap 3), sehingga
+  tombol Kasir tidak lagi benar-benar di tengah dan tampilannya berantakan.
+  Sekarang bottom nav berisi 5 tab: Dashboard, Produk, **Kasir** (tombol
+  bulat di tengah, benar-benar center), Transaksi, dan **Lainnya**
+  (menampung Pengeluaran/Laporan/Pengaturan lewat halaman `/lainnya`).
+  Sidebar desktop tidak berubah, tetap menampilkan ketujuh menu langsung.
+- **Angka terpenting ditonjolkan** — di Dashboard & Laporan, Laba Bersih
+  sekarang tampil sebagai kartu besar tersendiri di bagian atas, bukan
+  ikut berdesakan 1-dari-5 di grid 2 kolom.
+- **Kasir**: keranjang sebelumnya ada di bawah seluruh daftar produk, jadi
+  di HP harus scroll melewati semua menu dulu untuk sampai ke total &
+  tombol Simpan. Sekarang ada bar ringkas melayang ("N item · Rp total ·
+  Lihat Keranjang") begitu ada isi keranjang, tinggal tap untuk lompat ke
+  bagian checkout.
+- Padding aman untuk HP dengan notch/status bar (safe-area-inset) di header
+  atas, melengkapi yang sudah ada di bottom nav.
+- Chip filter periode (Hari ini/Kemarin/dst) diperbesar sedikit area tapnya.
+
 ## ⚠️ Wajib untuk fitur Lupa Password
 
 Supaya link reset password bisa mengarah balik ke aplikasi Anda (bukan

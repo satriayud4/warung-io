@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatRupiah, todayDateInputValue } from "@/lib/format";
@@ -57,6 +57,11 @@ export function TransactionEditor({
 
   const total = useMemo(() => cart.reduce((s, l) => s + l.price * l.qty, 0), [cart]);
   const maxDate = todayDateInputValue();
+  const cartSectionRef = useRef<HTMLDivElement>(null);
+
+  function scrollToCart() {
+    cartSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   function addProduct(p: ProductOption) {
     setCart((prev) => {
@@ -163,7 +168,7 @@ export function TransactionEditor({
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4 md:grid md:grid-cols-5 md:gap-5 md:space-y-0">
+    <div className="mx-auto max-w-3xl space-y-4 pb-20 md:grid md:grid-cols-5 md:gap-5 md:space-y-0 md:pb-0">
       {/* Product picker */}
       <div className="md:col-span-3">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -187,7 +192,7 @@ export function TransactionEditor({
       </div>
 
       {/* Cart / checkout */}
-      <div className="md:col-span-2">
+      <div ref={cartSectionRef} className="md:col-span-2">
         <div className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 md:sticky md:top-20">
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-500">Tanggal</label>
@@ -295,6 +300,23 @@ export function TransactionEditor({
           </button>
         </div>
       </div>
+
+      {/* Bar ringkasan keranjang — mobile saja. Di layar kecil, keranjang
+          berada di bawah daftar produk, jadi bar ini melayang di atas
+          bottom nav supaya total & tombol checkout tetap terjangkau tanpa
+          harus scroll melewati semua produk lebih dulu. */}
+      {cart.length > 0 && (
+        <button
+          type="button"
+          onClick={scrollToCart}
+          className="fixed inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 flex items-center justify-between rounded-2xl bg-gray-900 px-4 py-3 text-white shadow-lg md:hidden"
+        >
+          <span className="text-sm">
+            {cart.reduce((s, l) => s + l.qty, 0)} item · {formatRupiah(total)}
+          </span>
+          <span className="text-sm font-semibold">Lihat Keranjang ↓</span>
+        </button>
+      )}
     </div>
   );
 }

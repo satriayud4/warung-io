@@ -95,12 +95,11 @@ export default async function LaporanPage({
     transactions: detailedTransactions,
   };
 
-  const summaryCards = [
+  const secondarySummaryCards = [
     { label: "Omzet", value: summary.omzet },
     { label: "Modal", value: summary.modal },
     { label: "Laba Kotor", value: summary.labaKotor },
     { label: "Pengeluaran", value: summary.pengeluaran },
-    { label: "Laba Bersih", value: summary.labaBersih },
   ];
 
   return (
@@ -113,8 +112,12 @@ export default async function LaporanPage({
       {/* Ringkasan Penjualan */}
       <div>
         <h2 className="mb-2 text-sm font-semibold text-gray-700">Ringkasan Penjualan</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          {summaryCards.map((c) => (
+        <div className="rounded-2xl bg-brand-500 p-5 text-white shadow-sm">
+          <p className="text-xs font-medium text-brand-50">Laba Bersih</p>
+          <p className="mt-1 text-3xl font-bold">{formatRupiah(summary.labaBersih)}</p>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {secondarySummaryCards.map((c) => (
             <div key={c.label} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
               <p className="text-xs font-medium text-gray-500">{c.label}</p>
               <p className="mt-1 text-base font-bold text-gray-900">{formatRupiah(c.value)}</p>

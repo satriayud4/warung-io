@@ -2,19 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS } from "./nav-items";
+import { BOTTOM_NAV_ITEMS, LAINNYA_PATHS } from "./nav-items";
 import { NavIcon } from "./NavIcon";
 
 // Bottom navigation for mobile — thumb-friendly, always visible.
-// Kasir sits in the middle as a raised primary action.
+// Kasir sits in the true middle (slot 3 of 5) as a raised primary action.
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="grid grid-cols-5">
-        {NAV_ITEMS.filter((i) => i.href !== "/pengaturan").map((item) => {
-          const active = pathname.startsWith(item.href);
+        {BOTTOM_NAV_ITEMS.map((item) => {
+          const active =
+            item.href === "/lainnya"
+              ? LAINNYA_PATHS.some((p) => pathname.startsWith(p))
+              : pathname.startsWith(item.href);
           const isPrimary = item.href === "/kasir";
 
           return (
