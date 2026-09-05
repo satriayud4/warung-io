@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatRupiah, formatHariTanggalJam } from "@/lib/format";
 import { resolvePeriod, formatPeriodLabel } from "@/lib/date-range";
 import { PeriodFilter } from "@/components/reports/PeriodFilter";
-import { SalesChart } from "@/components/reports/SalesChart";
+import { SalesChartLazy } from "@/components/reports/SalesChartLazy";
 import { ExportSection } from "@/components/reports/ExportSection";
 import { MonthlyExportSection } from "@/components/reports/MonthlyExportSection";
 import {
@@ -148,7 +148,7 @@ export default async function LaporanPage({
       {/* Grafik */}
       <div>
         <h2 className="mb-2 text-sm font-semibold text-gray-700">Penjualan per Tanggal</h2>
-        <SalesChart data={byDate} />
+        <SalesChartLazy data={byDate} />
       </div>
 
       {/* Per menu */}

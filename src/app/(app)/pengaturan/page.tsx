@@ -5,8 +5,9 @@ import { ProfileForm } from "./ProfileForm";
 export default async function PengaturanPage() {
   const supabase = createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session!.user;
 
   const { data: settings } = await supabase
     .from("store_settings")

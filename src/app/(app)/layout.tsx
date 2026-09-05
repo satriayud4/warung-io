@@ -5,14 +5,19 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 
 // Shared layout for every page that requires a logged-in user.
-// The middleware already blocks unauthenticated requests, but we double
-// check here too since Server Components should never trust that alone.
+// The middleware already validates the session with Supabase's Auth server
+// (network round-trip) and redirects unauthenticated requests before this
+// layout ever runs. Re-checking with getUser() here would mean paying that
+// same network cost a second time on every single navigation, so we read
+// the already-validated session locally from the cookie instead — this is
+// a defense-in-depth fallback, not the actual security boundary.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
 
   if (!user) {
     redirect("/login");

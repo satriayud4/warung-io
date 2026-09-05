@@ -57,11 +57,11 @@ export function ExpenseForm({ expense }: { expense?: Expense }) {
       ({ error } = await supabase.from("expenses").update(payload).eq("id", expense!.id));
     } else {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
       ({ error } = await supabase
         .from("expenses")
-        .insert({ ...payload, created_by: user?.id ?? null }));
+        .insert({ ...payload, created_by: session?.user.id ?? null }));
     }
 
     setSaving(false);

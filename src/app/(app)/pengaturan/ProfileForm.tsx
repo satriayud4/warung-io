@@ -22,10 +22,10 @@ export function ProfileForm({ initial }: { initial: { name: string } }) {
     setSaved(false);
 
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    const { error } = await supabase.from("profiles").update({ name }).eq("id", user!.id);
+    const { error } = await supabase.from("profiles").update({ name }).eq("id", session!.user.id);
 
     setSaving(false);
 

@@ -15,13 +15,13 @@ export default async function DashboardPage({
 }) {
   const supabase = createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("name")
-    .eq("id", user!.id)
+    .eq("id", session!.user.id)
     .single();
 
   const { period, from, to } = resolvePeriod(

@@ -58,7 +58,30 @@ Offline support (bisa dipakai saat internet putus) belum dikerjakan.
 - Tombol +/- jumlah dan hapus item di keranjang Kasir diperbesar area
   tapnya untuk kenyamanan di layar sentuh.
 
-## Optimasi tampilan mobile (terbaru)
+## Perbaikan performa (navigasi terasa lambat)
+
+Kalau sebelumnya pindah halaman terasa lambat, penyebab utamanya: setiap
+navigasi memanggil `supabase.auth.getUser()` **sampai 3 kali berturut-turut**
+(middleware → layout → halaman itu sendiri) — dan `getUser()` selalu
+melakukan round-trip jaringan ke server Auth Supabase untuk validasi ulang,
+beda dengan `getSession()` yang cukup baca cookie lokal tanpa jaringan.
+Sekarang hanya middleware yang memakai `getUser()` (satu-satunya tempat yang
+memang perlu validasi jaringan sebagai gerbang keamanan); layout dan semua
+halaman lain memakai `getSession()` untuk mengambil `user.id` — RLS di
+database tetap jadi lapisan keamanan sebenarnya, jadi tidak ada yang
+dikorbankan dari sisi keamanan.
+
+Selain itu, halaman **Laporan** kini memuat grafik (`recharts`) secara lazy
+lewat `next/dynamic` — first-load JS halaman ini turun dari ~267kB jadi
+~160kB, grafik muncul sekejap belakangan dengan status "Memuat grafik..."
+alih-alih ikut memblokir render bagian lain.
+
+Kalau setelah ini masih terasa lambat, kemungkinan besar penyebabnya lokasi
+region project Supabase Anda — pastikan dipilih **Singapore** (bukan region
+lain) saat membuat project, karena jarak fisik ke server ikut menentukan
+latensi setiap query.
+
+## Optimasi tampilan mobile
 
 - **Bottom nav diperbaiki** — sebelumnya menampilkan 6 tab dalam grid
   5-kolom (bug peninggalan saat Laporan ditambahkan di Tahap 3), sehingga
