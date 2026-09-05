@@ -81,6 +81,7 @@ export function MonthlyExportSection({ storeName }: { storeName: string }) {
       byCategory: computeCategoryRows(expenses),
       payment: computePaymentBreakdown(transactions),
       detailedRows: flattenDetailedRows(detailedTransactions),
+      transactions: detailedTransactions,
     };
   }
 

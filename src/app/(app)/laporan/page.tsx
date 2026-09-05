@@ -92,6 +92,7 @@ export default async function LaporanPage({
     byCategory: categoryRows,
     payment,
     detailedRows,
+    transactions: detailedTransactions,
   };
 
   const summaryCards = [
@@ -162,7 +163,7 @@ export default async function LaporanPage({
                 className="rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-gray-100"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="truncate font-medium text-gray-800">{p.product_name}</span>
+                  <span className="min-w-0 truncate font-medium text-gray-800">{p.product_name}</span>
                   <span className="shrink-0 text-xs text-gray-500">
                     {Number(p.quantity).toLocaleString("id-ID")} terjual
                   </span>

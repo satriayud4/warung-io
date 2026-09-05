@@ -50,6 +50,43 @@ export const DailyReportCard = forwardRef<HTMLDivElement, { data: ReportData }>(
           </>
         )}
 
+        {data.transactions.length > 0 && (
+          <>
+            <div className="my-4 border-t border-dashed border-gray-300" />
+            <p className="mb-2 text-xs font-semibold text-gray-500">
+              Rincian Transaksi ({data.transactions.length})
+            </p>
+            <div className="space-y-2.5">
+              {data.transactions.map((t) => (
+                <div key={t.id} className="text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-800">{t.customer_name}</span>
+                    <span className="text-xs text-gray-400">
+                      {new Date(t.created_at).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      · {t.payment_method === "tunai" ? "Tunai" : "Non-tunai"}
+                    </span>
+                  </div>
+                  {t.transaction_items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between text-xs text-gray-500">
+                      <span>
+                        {item.product_name_snapshot} × {Number(item.quantity)}
+                      </span>
+                      <span>{formatRupiah(item.subtotal)}</span>
+                    </div>
+                  ))}
+                  <div className="flex justify-between text-xs font-semibold text-gray-700">
+                    <span>Total</span>
+                    <span>{formatRupiah(t.total_amount)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
         <div className="mt-5 text-center text-[10px] text-gray-400">
           Dibuat dengan Warung.io — Catat jualan, tahu untung.
         </div>

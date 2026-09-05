@@ -30,12 +30,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen md:pl-60">
       <Sidebar storeName={storeName} />
 
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 md:hidden">
-        <div>
+      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3 md:hidden">
+        <div className="min-w-0">
           <p className="font-bold text-brand-600">Warung.io</p>
-          <p className="text-xs text-gray-500">{storeName}</p>
+          <p className="truncate text-xs text-gray-500">{storeName}</p>
         </div>
-        <LogoutButton className="text-sm font-medium text-gray-500" />
+        <LogoutButton className="shrink-0 text-sm font-medium text-gray-500" />
       </header>
 
       <div className="hidden justify-end border-b border-gray-200 bg-white px-6 py-3 md:flex">

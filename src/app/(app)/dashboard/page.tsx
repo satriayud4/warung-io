@@ -108,13 +108,13 @@ export default async function DashboardPage({
                 key={p.product_name}
                 className="flex items-center justify-between rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-gray-100"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-600">
                     {i + 1}
                   </span>
-                  <span className="font-medium text-gray-800">{p.product_name}</span>
+                  <span className="truncate font-medium text-gray-800">{p.product_name}</span>
                 </div>
-                <span className="text-sm text-gray-500">
+                <span className="shrink-0 text-sm text-gray-500">
                   {Number(p.quantity).toLocaleString("id-ID")} porsi
                 </span>
               </div>
@@ -142,13 +142,13 @@ export default async function DashboardPage({
                 href={`/transaksi/${t.id}`}
                 className="flex items-center justify-between rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-gray-100"
               >
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{t.customer_name}</p>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-gray-900">{t.customer_name}</p>
                   <p className="text-xs text-gray-500">
                     {formatHariTanggalJam(t.transaction_date, t.created_at)}
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="shrink-0 text-sm font-semibold text-gray-900">
                   {formatRupiah(t.total_amount)}
                 </p>
               </Link>

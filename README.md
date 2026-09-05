@@ -50,6 +50,9 @@ Offline support (bisa dipakai saat internet putus) belum dikerjakan.
   produk per transaksi (Tanggal, Hari, Jam, Nama Pembeli, Produk, Jumlah,
   Harga, Total Transaksi, Metode Pembayaran), jadi bisa difilter/disortir
   sendiri di Excel, bukan cuma angka ringkasan.
+- **Export Gambar** (laporan 1 hari) sekarang juga menampilkan rincian tiap
+  transaksi hari itu (jam, pembeli, item & jumlah, total, metode
+  pembayaran) — bukan cuma angka ringkasan seperti sebelumnya.
 - Tabel "Penjualan Berdasarkan Menu" di Laporan diganti jadi kartu (bukan
   tabel lebar) supaya tidak perlu geser ke samping di HP.
 - Tombol +/- jumlah dan hapus item di keranjang Kasir diperbesar area

@@ -56,6 +56,7 @@ export type ReportData = {
   byCategory: CategoryRow[];
   payment: PaymentBreakdown;
   detailedRows: DetailedRow[];
+  transactions: DetailedTransaction[];
 };
 
 export function computeSummary(
