@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatRupiah, formatHariTanggalLengkap } from "@/lib/format";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -27,11 +28,13 @@ export default async function PengeluaranPage() {
       </div>
 
       {(!expenses || expenses.length === 0) && (
-        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
-          <p className="font-medium text-gray-700">Belum ada pengeluaran tercatat.</p>
-          <p className="mt-1 text-sm text-gray-500">
-            Catat belanja bahan, gas, listrik, dan kebutuhan warung lainnya di sini.
-          </p>
+        <div className="mt-6">
+          <EmptyState
+            icon="wallet"
+            title="Belum ada pengeluaran tercatat"
+            description="Catat belanja bahan, gas, listrik, dan kebutuhan warung lainnya di sini."
+            action={{ label: "+ Tambah Pengeluaran", href: "/pengeluaran/baru" }}
+          />
         </div>
       )}
 

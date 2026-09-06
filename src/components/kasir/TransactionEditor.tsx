@@ -137,27 +137,47 @@ export function TransactionEditor({
     setSavedTransactionId(data as string);
   }
 
-  // Success screen shown right after saving a NEW transaction.
+  // Success screen shown right after saving a NEW transaction. This is the
+  // one deliberately animated moment in the whole app — the checkmark
+  // draws itself in, confirming the save the way a person would want
+  // reassurance: something happened, and it happened successfully.
   if (savedTransactionId) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-2xl">
-            ✅
-          </div>
+        <div className="success-card-enter rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
+          <svg viewBox="0 0 52 52" className="mx-auto h-16 w-16">
+            <circle
+              className="success-check-circle"
+              cx="26"
+              cy="26"
+              r="23"
+              fill="none"
+              stroke="#1ea862"
+              strokeWidth="3"
+            />
+            <path
+              className="success-check-mark"
+              fill="none"
+              stroke="#1ea862"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.5 27.5 22.5 34.5 37 19"
+            />
+          </svg>
           <p className="mt-4 font-semibold text-gray-900">Transaksi berhasil disimpan.</p>
           <p className="mt-1 text-sm text-gray-500">Total {formatRupiah(total)}</p>
 
           <div className="mt-6 space-y-2">
             <button
               onClick={resetForNewTransaction}
-              className="w-full rounded-xl bg-brand-500 px-4 py-3 font-semibold text-white"
+              className="w-full rounded-xl bg-brand-500 px-4 py-3 font-semibold text-white transition active:scale-[0.98]"
             >
               Transaksi Baru
             </button>
             <button
               onClick={() => router.push(`/transaksi/${savedTransactionId}`)}
-              className="w-full rounded-xl bg-gray-100 px-4 py-3 font-semibold text-gray-700"
+              className="w-full rounded-xl bg-gray-100 px-4 py-3 font-semibold text-gray-700 transition active:scale-[0.98]"
             >
               Lihat Transaksi
             </button>

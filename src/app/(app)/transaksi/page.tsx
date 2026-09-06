@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatRupiah, formatHariTanggalJam } from "@/lib/format";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +20,13 @@ export default async function TransaksiPage() {
       <h1 className="text-lg font-semibold">Transaksi</h1>
 
       {(!transactions || transactions.length === 0) && (
-        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
-          <p className="font-medium text-gray-700">Belum ada transaksi.</p>
-          <p className="mt-1 text-sm text-gray-500">
-            Transaksi yang disimpan lewat Kasir akan muncul di sini.
-          </p>
+        <div className="mt-6">
+          <EmptyState
+            icon="list"
+            title="Belum ada transaksi"
+            description="Transaksi yang disimpan lewat Kasir akan muncul di sini."
+            action={{ label: "Buka Kasir", href: "/kasir" }}
+          />
         </div>
       )}
 

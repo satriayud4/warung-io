@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { AuthHeader } from "@/components/brand/AuthHeader";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,10 +40,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-brand-600">Warung.io</h1>
-          <p className="mt-1 text-sm text-gray-500">Catat jualan, tahu untung.</p>
-        </div>
+        <AuthHeader />
 
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
           <h2 className="mb-4 text-lg font-semibold">Masuk ke akun Anda</h2>

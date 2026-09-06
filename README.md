@@ -90,6 +90,32 @@ responsif (tidak ikut "loading"), cuma bagian isinya yang menampilkan
 skeleton sampai datanya siap. Total waktu ambil data tidak berubah, tapi
 transisinya terasa jauh lebih instan karena ada respons visual seketika.
 
+## Polish visual (logo, animasi, empty state)
+
+Perubahan ini murni visual — tidak ada fitur, struktur, atau alur yang
+berubah:
+
+- **Logo/brand mark custom** (`src/components/brand/Logo.tsx`) — ikon kios
+  sederhana dengan atap terpal bergaris (bukan ikon generik atau cuma
+  inisial huruf), dipakai konsisten di halaman login/register/lupa
+  password/reset password dan Sidebar desktop lewat komponen
+  `AuthHeader` bersama.
+- **Satu momen animasi yang sengaja ditonjolkan**: layar "Transaksi
+  berhasil disimpan" di Kasir sekarang punya animasi centang yang
+  "digambar" (lingkaran lalu centang, berurutan), bukan emoji statis.
+  Animasi lain di aplikasi sengaja dibuat minim — meletakkan satu momen
+  yang berarti lebih terasa istimewa daripada animasi di mana-mana.
+- **Empty state lebih hidup**: halaman Dashboard/Produk/Transaksi/
+  Pengeluaran yang belum ada datanya sekarang pakai komponen
+  `EmptyState` (ikon dalam lingkaran + judul + deskripsi + tombol aksi),
+  memakai kosakata ikon yang sama dengan navigasi supaya terasa satu
+  sistem, bukan tempelan ilustrasi baru yang tidak nyambung.
+- Skeleton loading (`PageSkeleton`) sekarang punya sapuan shimmer halus,
+  bukan cuma pulse polos.
+- Semua animasi menghormati pengaturan "Reduce Motion" di perangkat
+  (`prefers-reduced-motion`) — otomatis nonaktif kalau pengguna
+  mengaktifkan itu di HP/komputernya.
+
 ## Optimasi tampilan mobile
 
 - **Bottom nav diperbaiki** — sebelumnya menampilkan 6 tab dalam grid
@@ -204,7 +230,9 @@ src/
       laporan/                ringkasan, grafik, breakdown, export
       pengaturan/            info warung (bersama) + akun saya (pribadi)
   components/
-    layout/                  BottomNav, Sidebar, ikon
+    layout/                  BottomNav, Sidebar, ikon, PageSkeleton
+    brand/                   Logo & AuthHeader (mark kios + tagline)
+    ui/EmptyState.tsx        tampilan kosong konsisten (ikon+judul+aksi)
     kasir/TransactionEditor  keranjang, pembayaran & checkout — dipakai Kasir & edit transaksi
     reports/
       PeriodFilter.tsx        filter periode bersama (Dashboard & Laporan)

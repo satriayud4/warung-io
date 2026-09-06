@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatRupiah } from "@/lib/format";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,13 @@ export default async function ProdukPage() {
       </div>
 
       {(!products || products.length === 0) && (
-        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
-          <p className="font-medium text-gray-700">Belum ada produk.</p>
-          <p className="mt-1 text-sm text-gray-500">Tambahkan menu pertama Anda.</p>
+        <div className="mt-6">
+          <EmptyState
+            icon="box"
+            title="Belum ada produk"
+            description="Tambahkan menu pertama supaya bisa mulai dipakai di Kasir."
+            action={{ label: "+ Tambah Produk", href: "/produk/baru" }}
+          />
         </div>
       )}
 

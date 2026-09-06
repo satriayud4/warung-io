@@ -19,3 +19,63 @@ body {
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ---- Skeleton loading shimmer ---------------------------------------
+   Fungsional (menunjukkan "sedang memuat"), bukan dekorasi — dipakai di
+   PageSkeleton. Sapuan halus terasa lebih hidup daripada pulse polos. */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #eef0f2;
+}
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+}
+@keyframes shimmer-sweep {
+  100% { transform: translateX(100%); }
+}
+
+/* ---- Satu momen animasi utama: konfirmasi transaksi tersimpan -------
+   Lingkaran & centang digambar berurutan begitu Kasir berhasil menyimpan
+   transaksi. Ini satu-satunya "moment" yang sengaja ditonjolkan; motion
+   lain di aplikasi dibuat minim/fungsional saja. */
+.success-check-circle {
+  stroke-dasharray: 145;
+  stroke-dashoffset: 145;
+  animation: draw-circle 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.success-check-mark {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+  animation: draw-check 0.3s ease-out 0.4s forwards;
+}
+.success-card-enter {
+  animation: card-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes draw-circle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes draw-check {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes card-pop {
+  from { opacity: 0; transform: scale(0.92) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after { animation: none; }
+  .success-check-circle,
+  .success-check-mark { animation: none; stroke-dashoffset: 0; }
+  .success-card-enter { animation: none; }
+}

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/brand/Logo";
+import { AuthHeader } from "@/components/brand/AuthHeader";
 
 export default function LupaPasswordPage() {
   const supabase = createClient();
@@ -36,7 +38,8 @@ export default function LupaPasswordPage() {
   if (sent) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
-        <h1 className="text-2xl font-bold text-brand-600">Warung.io</h1>
+        <Logo className="h-12 w-12" />
+        <h1 className="mt-3 text-2xl font-bold text-brand-600">Warung.io</h1>
         <div className="mt-6 w-full max-w-sm rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
           <p className="font-semibold">Link reset password sudah dikirim.</p>
           <p className="mt-2 text-sm text-gray-500">
@@ -57,10 +60,7 @@ export default function LupaPasswordPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-12">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-brand-600">Warung.io</h1>
-          <p className="mt-1 text-sm text-gray-500">Catat jualan, tahu untung.</p>
-        </div>
+        <AuthHeader />
 
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
           <h2 className="mb-1 text-lg font-semibold">Lupa password</h2>

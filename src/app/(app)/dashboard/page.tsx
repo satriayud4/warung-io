@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatRupiah, formatHariTanggalJam } from "@/lib/format";
 import { resolvePeriod, formatPeriodLabel } from "@/lib/date-range";
 import { PeriodFilter } from "@/components/reports/PeriodFilter";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type ProductSales = { product_name: string; quantity: number; omzet: number; laba: number };
 
@@ -93,12 +94,12 @@ export default async function DashboardPage({
       </div>
 
       {(transactions ?? []).length === 0 && (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center">
-          <p className="font-medium text-gray-700">Belum ada transaksi di periode ini.</p>
-          <Link href="/kasir" className="mt-2 inline-block text-sm font-semibold text-brand-600">
-            Buka Kasir →
-          </Link>
-        </div>
+        <EmptyState
+          icon="cart"
+          title="Belum ada transaksi di periode ini"
+          description="Coba ubah filter periode, atau mulai transaksi baru dari Kasir."
+          action={{ label: "Buka Kasir", href: "/kasir" }}
+        />
       )}
 
       <div>
