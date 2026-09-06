@@ -81,6 +81,15 @@ region project Supabase Anda — pastikan dipilih **Singapore** (bukan region
 lain) saat membuat project, karena jarak fisik ke server ikut menentukan
 latensi setiap query.
 
+Satu lagi yang ditambahkan: file `src/app/(app)/loading.tsx`. Sebelumnya,
+begitu menu ditekan, layar terlihat "diam" sesaat sebelum berpindah karena
+tidak ada umpan balik visual sama sekali selagi server mengambil data
+halaman tujuan. Sekarang Next.js otomatis menampilkan skeleton loading
+instan begitu menu ditekan — Sidebar/BottomNav/header tetap langsung
+responsif (tidak ikut "loading"), cuma bagian isinya yang menampilkan
+skeleton sampai datanya siap. Total waktu ambil data tidak berubah, tapi
+transisinya terasa jauh lebih instan karena ada respons visual seketika.
+
 ## Optimasi tampilan mobile
 
 - **Bottom nav diperbaiki** — sebelumnya menampilkan 6 tab dalam grid
