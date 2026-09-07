@@ -51,10 +51,10 @@ export default async function PengaturanPage() {
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
         <h2 className="mb-1 text-sm font-semibold text-gray-800">Ubah Password</h2>
         <p className="mb-4 text-xs text-gray-500">
-          Ganti password akun Anda sendiri. Kalau lupa password saat ini, gunakan link "Lupa
-          Password" di halaman login setelah logout.
+          Langsung ganti password akun Anda ({user!.email}) selagi masih login di sini. Kalau
+          lupa password dan tidak sedang login, gunakan link "Lupa Password" di halaman login.
         </p>
-        <ChangePasswordForm email={user!.email!} />
+        <ChangePasswordForm />
       </div>
 
       <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-5 text-sm text-gray-500">

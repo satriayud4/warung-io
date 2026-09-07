@@ -4,14 +4,11 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 // Ganti password langsung dari dalam aplikasi (tanpa perlu alur email
-// "Lupa Password"). Password saat ini diverifikasi dulu lewat
-// signInWithPassword sebelum diganti — supaya orang yang kebetulan
-// menemukan sesi yang masih login (HP/komputer tidak di-logout) tidak
-// bisa asal ganti password tanpa tahu password lamanya.
-export function ChangePasswordForm({ email }: { email: string }) {
+// "Lupa Password"). Tidak minta password lama — cukup mengandalkan sesi
+// login yang sudah aktif, jadi tinggal isi password baru.
+export function ChangePasswordForm() {
   const supabase = createClient();
 
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [saving, setSaving] = useState(false);
@@ -33,47 +30,21 @@ export function ChangePasswordForm({ email }: { email: string }) {
     }
 
     setSaving(true);
-
-    const { error: verifyError } = await supabase.auth.signInWithPassword({
-      email,
-      password: currentPassword,
-    });
-
-    if (verifyError) {
-      setSaving(false);
-      setError("Password saat ini salah.");
-      return;
-    }
-
-    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
-
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
     setSaving(false);
 
-    if (updateError) {
-      setError(updateError.message);
+    if (error) {
+      setError(error.message);
       return;
     }
 
     setSaved(true);
-    setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Password saat ini</label>
-        <input
-          type="password"
-          required
-          autoComplete="current-password"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-        />
-      </div>
-
       <div>
         <label className="mb-1 block text-sm font-medium text-gray-700">Password baru</label>
         <input

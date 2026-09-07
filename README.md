@@ -120,10 +120,10 @@ berubah:
 
 Sebelumnya ganti password cuma bisa lewat alur "Lupa Password" (kirim link
 email). Sekarang di halaman **Pengaturan** ada card "Ubah Password" —
-minta password saat ini (diverifikasi dulu lewat `signInWithPassword`
-sebelum diganti, supaya orang yang kebetulan pakai sesi yang masih login
-tidak bisa asal ganti password tanpa tahu password lamanya), lalu password
-baru + konfirmasi.
+cukup masukkan password baru + konfirmasi selagi masih login, tidak perlu
+ketik ulang password lama (mengandalkan sesi login yang sudah aktif, sama
+seperti kebanyakan aplikasi lain). Kalau memang lupa password dan sedang
+tidak login sama sekali, tetap pakai alur "Lupa Password" di halaman login.
 
 ## Kategori produk (Makanan/Minuman/Snack/Lainnya)
 
