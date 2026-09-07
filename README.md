@@ -116,6 +116,18 @@ berubah:
   (`prefers-reduced-motion`) — otomatis nonaktif kalau pengguna
   mengaktifkan itu di HP/komputernya.
 
+## Kategori produk (Makanan/Minuman/Snack/Lainnya)
+
+- Setiap produk sekarang punya kategori — pilihannya: Makanan, Minuman,
+  Snack, Lainnya. Produk lama otomatis dapat kategori "Makanan" (lewat
+  default kolom di migrasi), tinggal diedit satu-satu kalau perlu diubah.
+- Halaman **Produk** mengelompokkan daftarnya per kategori (section
+  terpisah per kategori, cuma yang ada isinya yang ditampilkan).
+- Halaman **Kasir** menampilkan chip filter kategori di atas grid menu
+  (cuma muncul kalau produk aktifnya lebih dari satu kategori) — tinggal
+  tap "Minuman" untuk cuma lihat menu minuman, "Semua" untuk balik lihat
+  semuanya. Sangat membantu begitu jumlah menunya banyak.
+
 ## Filter periode: Tahun, Semua, dan lebih nyaman di mobile
 
 - Filter periode di Dashboard & Laporan sekarang punya 7 pilihan: Hari
@@ -195,6 +207,7 @@ mudah:
    - `supabase/migrations/0003_reports_rpc.sql`
    - `supabase/migrations/0004_payment_method.sql`
    - `supabase/migrations/0005_all_time_best_sellers.sql`
+   - `supabase/migrations/0006_product_category.sql`
 3. Di **Project Settings → API**, salin `Project URL` dan `anon public key`.
 4. (Opsional, untuk auth lebih cepat saat development) di **Authentication →
    Providers → Email**, matikan "Confirm email" supaya bisa langsung login
@@ -276,6 +289,7 @@ supabase/
     0003_reports_rpc.sql      fungsi agregasi untuk Dashboard & Laporan
     0004_payment_method.sql   kolom payment_method + update fungsi transaksi
     0005_all_time_best_sellers.sql  fungsi Menu Terlaris all-time
+    0006_product_category.sql       kolom kategori produk
   seed_products.sql          data contoh produk
   reset.sql                  hapus semua tabel (hanya untuk migrasi ulang)
 ```

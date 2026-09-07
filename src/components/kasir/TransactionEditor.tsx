@@ -4,10 +4,12 @@ import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatRupiah, todayDateInputValue } from "@/lib/format";
+import { PRODUCT_CATEGORIES } from "@/lib/product-categories";
 
 export type ProductOption = {
   id: string;
   name: string;
+  category: string;
   selling_price: number;
   unit: string;
 };
@@ -54,6 +56,17 @@ export function TransactionEditor({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedTransactionId, setSavedTransactionId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>("Semua");
+
+  const availableCategories = useMemo(() => {
+    const present = new Set(products.map((p) => p.category));
+    return PRODUCT_CATEGORIES.filter((c) => present.has(c));
+  }, [products]);
+
+  const visibleProducts = useMemo(
+    () => (activeCategory === "Semua" ? products : products.filter((p) => p.category === activeCategory)),
+    [products, activeCategory]
+  );
 
   const total = useMemo(() => cart.reduce((s, l) => s + l.price * l.qty, 0), [cart]);
   const maxDate = todayDateInputValue();
@@ -191,8 +204,26 @@ export function TransactionEditor({
     <div className="mx-auto max-w-3xl space-y-4 pb-20 md:grid md:grid-cols-5 md:gap-5 md:space-y-0 md:pb-0">
       {/* Product picker */}
       <div className="md:col-span-3">
+        {availableCategories.length > 1 && (
+          <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1">
+            {["Semua", ...availableCategories].map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-medium transition ${
+                  activeCategory === cat
+                    ? "bg-brand-500 text-white"
+                    : "bg-white text-gray-600 ring-1 ring-gray-200"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {products.map((p) => (
+          {visibleProducts.map((p) => (
             <button
               key={p.id}
               type="button"

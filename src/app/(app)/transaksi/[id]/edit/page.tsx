@@ -24,7 +24,7 @@ export default async function EditTransaksiPage({ params }: { params: { id: stri
 
   const { data: products } = await supabase
     .from("products")
-    .select("id, name, selling_price, unit")
+    .select("id, name, category, selling_price, unit")
     .eq("is_active", true)
     .order("name", { ascending: true });
 

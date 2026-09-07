@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { PRODUCT_CATEGORIES } from "@/lib/product-categories";
 
 type Product = {
   id: string;
   name: string;
+  category: string;
   cost_price: number | null;
   selling_price: number;
   unit: string;
@@ -21,6 +23,7 @@ export function ProductForm({ product }: { product?: Product }) {
   const isEdit = Boolean(product);
 
   const [name, setName] = useState(product?.name ?? "");
+  const [category, setCategory] = useState(product?.category ?? PRODUCT_CATEGORIES[0]);
   const [costPrice, setCostPrice] = useState(product?.cost_price?.toString() ?? "");
   const [sellingPrice, setSellingPrice] = useState(product?.selling_price?.toString() ?? "");
   const [unit, setUnit] = useState(product?.unit ?? "porsi");
@@ -51,6 +54,7 @@ export function ProductForm({ product }: { product?: Product }) {
 
     const payload = {
       name: name.trim(),
+      category,
       cost_price: parsedCost,
       selling_price: parsedSelling,
       unit,
@@ -108,6 +112,21 @@ export function ProductForm({ product }: { product?: Product }) {
           className="w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           placeholder="Lontong Kikil Jumbo"
         />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium text-gray-700">Kategori</label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+        >
+          {PRODUCT_CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
