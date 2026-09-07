@@ -31,26 +31,31 @@ export default async function DashboardPage({
     searchParams.to
   );
 
-  const [{ data: transactions }, { data: expenses }, { data: bestSellersData }, { data: recent }] =
-    await Promise.all([
-      supabase
-        .from("transactions")
-        .select("total_amount, total_cost, total_profit")
-        .gte("transaction_date", from)
-        .lte("transaction_date", to),
-      supabase.from("expenses").select("amount").gte("expense_date", from).lte("expense_date", to),
-      // Menu Terlaris selalu all-time (tidak mengikuti filter periode di
-      // atas) — pakai fungsi database khusus, bukan dihitung di browser,
-      // supaya tetap ringan walau transaksinya sudah ribuan.
-      supabase.rpc("get_top_products_all_time", { p_limit: 3 }) as unknown as Promise<{
-        data: ProductSales[] | null;
-      }>,
-      supabase
-        .from("transactions")
-        .select("id, transaction_date, customer_name, total_amount, created_at")
-        .order("created_at", { ascending: false })
-        .limit(5),
-    ]);
+  const [
+    { data: transactions },
+    { data: expenses },
+    { data: bestSellersData, error: bestSellersError },
+    { data: recent },
+  ] = await Promise.all([
+    supabase
+      .from("transactions")
+      .select("total_amount, total_cost, total_profit")
+      .gte("transaction_date", from)
+      .lte("transaction_date", to),
+    supabase.from("expenses").select("amount").gte("expense_date", from).lte("expense_date", to),
+    // Menu Terlaris selalu all-time (tidak mengikuti filter periode di
+    // atas) — pakai fungsi database khusus, bukan dihitung di browser,
+    // supaya tetap ringan walau transaksinya sudah ribuan.
+    supabase.rpc("get_top_products_all_time", { p_limit: 3 }) as unknown as Promise<{
+      data: ProductSales[] | null;
+      error: { message: string } | null;
+    }>,
+    supabase
+      .from("transactions")
+      .select("id, transaction_date, customer_name, total_amount, created_at")
+      .order("created_at", { ascending: false })
+      .limit(5),
+  ]);
 
   const omzet = (transactions ?? []).reduce((s, t) => s + Number(t.total_amount), 0);
   const modal = (transactions ?? []).reduce((s, t) => s + Number(t.total_cost), 0);
@@ -105,7 +110,12 @@ export default async function DashboardPage({
       <div>
         <h2 className="text-sm font-semibold text-gray-700">Menu Terlaris</h2>
         <p className="mb-2 text-xs text-gray-400">Sepanjang waktu (semua transaksi)</p>
-        {bestSellers.length === 0 ? (
+        {bestSellersError ? (
+          <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            Gagal memuat: {bestSellersError.message}. Pastikan migrasi
+            0005_all_time_best_sellers.sql sudah dijalankan di Supabase.
+          </p>
+        ) : bestSellers.length === 0 ? (
           <p className="rounded-2xl bg-white p-4 text-sm text-gray-400 ring-1 ring-gray-100">
             Belum ada penjualan tercatat.
           </p>

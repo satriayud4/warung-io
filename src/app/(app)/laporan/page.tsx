@@ -52,9 +52,11 @@ export default async function LaporanPage({
       .lte("expense_date", to),
     supabase.rpc("get_sales_by_product", { p_from: from, p_to: to }) as unknown as Promise<{
       data: ProductRow[] | null;
+      error: { message: string } | null;
     }>,
     supabase.rpc("get_sales_by_date", { p_from: from, p_to: to }) as unknown as Promise<{
       data: DateRow[] | null;
+      error: { message: string } | null;
     }>,
     supabase
       .from("transactions")
@@ -65,7 +67,10 @@ export default async function LaporanPage({
       .lte("transaction_date", to)
       .order("transaction_date", { ascending: false })
       .order("created_at", { ascending: false })
-      .limit(100) as unknown as Promise<{ data: DetailedTransaction[] | null }>,
+      .limit(100) as unknown as Promise<{
+      data: DetailedTransaction[] | null;
+      error: { message: string } | null;
+    }>,
   ]);
 
   const txRows = transactions ?? [];
@@ -73,6 +78,16 @@ export default async function LaporanPage({
   const byProduct = prodRes.data ?? [];
   const byDate = dateRes.data ?? [];
   const detailedTransactions = detailRes.data ?? [];
+
+  // Kalau salah satu query gagal (mis. fungsi database belum ter-deploy,
+  // atau schema cache Supabase belum ter-refresh), tampilkan errornya
+  // langsung di layar — daripada diam-diam terlihat seperti "belum ada
+  // data" padahal sebenarnya query-nya gagal.
+  const queryErrors = [
+    prodRes.error && `Penjualan per menu: ${prodRes.error.message}`,
+    dateRes.error && `Grafik per tanggal: ${dateRes.error.message}`,
+    detailRes.error && `Rincian transaksi: ${detailRes.error.message}`,
+  ].filter(Boolean) as string[];
 
   const summary = computeSummary(txRows, expRows);
   const categoryRows = computeCategoryRows(expRows);
@@ -108,6 +123,22 @@ export default async function LaporanPage({
 
       <PeriodFilter activePeriod={period} from={from} to={to} />
       <p className="-mt-3 text-xs text-gray-400">{periodLabel}</p>
+
+      {queryErrors.length > 0 && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <p className="font-semibold">Sebagian data gagal dimuat:</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-4">
+            {queryErrors.map((msg) => (
+              <li key={msg}>{msg}</li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-red-600">
+            Kemungkinan ada migrasi database yang belum dijalankan, atau schema Supabase perlu
+            di-refresh. Coba jalankan <code>NOTIFY pgrst, &apos;reload schema&apos;;</code> di SQL
+            Editor Supabase.
+          </p>
+        </div>
+      )}
 
       {/* Ringkasan Penjualan */}
       <div>

@@ -35,10 +35,45 @@ export function PeriodFilter({
 
   return (
     <div>
-      <div className="flex gap-1.5 overflow-x-auto pb-1">
+      {/* Mobile: dropdown native — sekali tap langsung buka picker OS,
+          tidak perlu geser-geser mencari opsi di deretan chip yang makin
+          panjang (sekarang ada 7 pilihan). Jauh lebih nyaman satu tangan. */}
+      <div className="md:hidden">
+        <label className="sr-only" htmlFor="period-select">
+          Pilih periode
+        </label>
+        <div className="relative">
+          <select
+            id="period-select"
+            value={showCustom ? "custom" : activePeriod}
+            onChange={(e) => selectPeriod(e.target.value as Period)}
+            className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-3 pl-4 pr-10 text-sm font-medium text-gray-800 shadow-sm"
+          >
+            {PERIOD_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <svg
+            className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m5 8 5 5 5-5" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Desktop/tablet: deretan chip — ada cukup ruang untuk semua opsi
+          sekaligus tanpa perlu buka dropdown. */}
+      <div className="hidden gap-1.5 overflow-x-auto pb-1 md:flex">
         {PERIOD_OPTIONS.map((opt) => {
-          const active =
-            activePeriod === opt.value || (opt.value === "custom" && showCustom);
+          const active = activePeriod === opt.value || (opt.value === "custom" && showCustom);
           return (
             <button
               key={opt.value}

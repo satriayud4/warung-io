@@ -116,6 +116,23 @@ berubah:
   (`prefers-reduced-motion`) — otomatis nonaktif kalau pengguna
   mengaktifkan itu di HP/komputernya.
 
+## Filter periode: Tahun, Semua, dan lebih nyaman di mobile
+
+- Filter periode di Dashboard & Laporan sekarang punya 7 pilihan: Hari
+  ini, Kemarin, 7 hari, Bulan ini, **Tahun ini**, **Semua** (all-time —
+  dari awal warung tercatat sampai hari ini), dan Custom.
+- **Di HP**, filter ini sekarang tampil sebagai dropdown native (bukan
+  deretan chip yang harus digeser) — sekali tap langsung terbuka picker
+  bawaan HP, jauh lebih cepat dipilih dengan satu tangan dibanding
+  menggeser-geser 7 pilihan di layar sempit.
+- Di tablet/desktop tetap memakai deretan chip seperti sebelumnya, karena
+  di layar lebar semua opsi sudah cukup ruang untuk terlihat sekaligus.
+- Catatan kecil: untuk periode panjang (Tahun ini/Semua), grafik
+  "Penjualan per Tanggal" tetap mengelompokkan per hari (bisa terlihat
+  padat kalau rentangnya bertahun-tahun). Kalau ini terasa mengganggu,
+  bilang saja — bisa ditambahkan pengelompokan per bulan untuk periode
+  panjang.
+
 ## Optimasi tampilan mobile
 
 - **Bottom nav diperbaiki** — sebelumnya menampilkan 6 tab dalam grid
