@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { StoreSettingsForm } from "./StoreSettingsForm";
 import { ProfileForm } from "./ProfileForm";
+import { ChangePasswordForm } from "./ChangePasswordForm";
 
 export default async function PengaturanPage() {
   const supabase = createClient();
@@ -45,6 +46,15 @@ export default async function PengaturanPage() {
         <h2 className="mb-1 text-sm font-semibold text-gray-800">Akun Saya</h2>
         <p className="mb-4 text-xs text-gray-500">{user!.email}</p>
         <ProfileForm initial={{ name: profile?.name ?? "" }} />
+      </div>
+
+      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+        <h2 className="mb-1 text-sm font-semibold text-gray-800">Ubah Password</h2>
+        <p className="mb-4 text-xs text-gray-500">
+          Ganti password akun Anda sendiri. Kalau lupa password saat ini, gunakan link "Lupa
+          Password" di halaman login setelah logout.
+        </p>
+        <ChangePasswordForm email={user!.email!} />
       </div>
 
       <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-5 text-sm text-gray-500">

@@ -116,6 +116,15 @@ berubah:
   (`prefers-reduced-motion`) — otomatis nonaktif kalau pengguna
   mengaktifkan itu di HP/komputernya.
 
+## Ubah Password dari dalam aplikasi
+
+Sebelumnya ganti password cuma bisa lewat alur "Lupa Password" (kirim link
+email). Sekarang di halaman **Pengaturan** ada card "Ubah Password" —
+minta password saat ini (diverifikasi dulu lewat `signInWithPassword`
+sebelum diganti, supaya orang yang kebetulan pakai sesi yang masih login
+tidak bisa asal ganti password tanpa tahu password lamanya), lalu password
+baru + konfirmasi.
+
 ## Kategori produk (Makanan/Minuman/Snack/Lainnya)
 
 - Setiap produk sekarang punya kategori — pilihannya: Makanan, Minuman,
