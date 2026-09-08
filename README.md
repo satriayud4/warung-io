@@ -116,6 +116,20 @@ berubah:
   (`prefers-reduced-motion`) — otomatis nonaktif kalau pengguna
   mengaktifkan itu di HP/komputernya.
 
+## Umpan balik "satisfying" saat tap produk di Kasir
+
+- Tiap kali produk di-tap, kartunya memantul singkat (bukan cuma
+  press-down biasa) dan muncul **badge angka** di pojok kanan atas
+  menunjukkan berapa kali item itu sudah masuk keranjang.
+- Warna kartu **berjenjang mengikuti jumlah** — makin sering di-tap, makin
+  pekat warnanya (putih → hijau muda → hijau sedang → hijau tua). Sengaja
+  dikaitkan ke jumlah (bukan warna acak) supaya tetap menyampaikan info
+  berguna ("oh ini sudah 3x ditekan") sambil tetap terasa hidup — warna
+  acak murni berisiko membingungkan saat sedang buru-buru melayani
+  pembeli.
+- Badge angkanya juga ikut "pop" tiap bertambah, jadi kelihatan jelas
+  setiap tap kehitung.
+
 ## Ubah Password dari dalam aplikasi
 
 Sebelumnya ganti password cuma bisa lewat alur "Lupa Password" (kirim link

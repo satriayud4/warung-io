@@ -73,9 +73,31 @@ button, a {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* ---- Tap produk di Kasir terasa "nendang" ----------------------------
+   Setiap kali produk di-tap, kartu memantul singkat dan badge jumlahnya
+   muncul dengan pop kecil — umpan balik instan bahwa tap-nya kehitung. */
+.product-tap-pop {
+  animation: product-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.qty-badge-pop {
+  animation: badge-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes product-pop {
+  0% { transform: scale(0.9); }
+  55% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+@keyframes badge-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .skeleton-shimmer::after { animation: none; }
   .success-check-circle,
   .success-check-mark { animation: none; stroke-dashoffset: 0; }
   .success-card-enter { animation: none; }
+  .product-tap-pop,
+  .qty-badge-pop { animation: none; }
 }

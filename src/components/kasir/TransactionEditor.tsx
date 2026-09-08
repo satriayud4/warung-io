@@ -36,6 +36,34 @@ export type PaymentMethod = "tunai" | "nontunai";
 // "edit transaction" (Transaksi > edit). The actual prices used to compute
 // totals always come from the database (via RPC), never from this
 // component's state — quantities are the only thing sent to the server.
+// Warna kartu produk berjenjang mengikuti jumlah yang sudah dimasukkan ke
+// keranjang — makin sering di-tap, makin pekat warnanya. Sengaja dikaitkan
+// ke jumlah (bukan acak) supaya warnanya tetap menyampaikan info yang
+// berguna sambil tetap terasa "hidup" tiap kali di-tap.
+function productTierClasses(qty: number) {
+  if (qty === 0) {
+    return { container: "bg-white ring-gray-100", name: "text-gray-900", price: "text-brand-600" };
+  }
+  if (qty === 1) {
+    return {
+      container: "bg-brand-50 ring-brand-200",
+      name: "text-gray-900",
+      price: "text-brand-600",
+    };
+  }
+  if (qty <= 3) {
+    return {
+      container: "bg-brand-200 ring-brand-300",
+      name: "text-gray-900",
+      price: "text-brand-700",
+    };
+  }
+  if (qty <= 6) {
+    return { container: "bg-brand-400 ring-brand-500", name: "text-white", price: "text-brand-50" };
+  }
+  return { container: "bg-brand-600 ring-brand-700", name: "text-white", price: "text-brand-100" };
+}
+
 export function TransactionEditor({
   products,
   initial,
@@ -69,6 +97,10 @@ export function TransactionEditor({
   );
 
   const total = useMemo(() => cart.reduce((s, l) => s + l.price * l.qty, 0), [cart]);
+  const cartQtyById = useMemo(
+    () => new Map(cart.map((l) => [l.product_id, l.qty])),
+    [cart]
+  );
   const maxDate = todayDateInputValue();
   const cartSectionRef = useRef<HTMLDivElement>(null);
 
@@ -223,17 +255,32 @@ export function TransactionEditor({
           </div>
         )}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {visibleProducts.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => addProduct(p)}
-              className="rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-gray-100 active:scale-[0.98]"
-            >
-              <p className="text-sm font-semibold leading-snug text-gray-900">{p.name}</p>
-              <p className="mt-1 text-sm text-brand-600">{formatRupiah(p.selling_price)}</p>
-            </button>
-          ))}
+          {visibleProducts.map((p) => {
+            const qty = cartQtyById.get(p.id) ?? 0;
+            const tier = productTierClasses(qty);
+
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => addProduct(p)}
+                className={`relative rounded-2xl p-3 text-left shadow-sm ring-1 transition-colors active:scale-[0.94] ${tier.container}`}
+              >
+                {qty > 0 && (
+                  <span
+                    key={qty}
+                    className="qty-badge-pop absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-1.5 text-xs font-bold text-brand-600 shadow"
+                  >
+                    {qty}
+                  </span>
+                )}
+                <span key={qty} className="product-tap-pop block">
+                  <p className={`text-sm font-semibold leading-snug ${tier.name}`}>{p.name}</p>
+                  <p className={`mt-1 text-sm ${tier.price}`}>{formatRupiah(p.selling_price)}</p>
+                </span>
+              </button>
+            );
+          })}
           {products.length === 0 && (
             <p className="col-span-full rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-500">
               Belum ada produk aktif. Tambahkan dulu di halaman Produk.
