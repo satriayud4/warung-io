@@ -116,6 +116,28 @@ berubah:
   (`prefers-reduced-motion`) — otomatis nonaktif kalau pengguna
   mengaktifkan itu di HP/komputernya.
 
+## Loading saat klik filter periode (Dashboard & Laporan)
+
+`loading.tsx` yang sudah ada sebelumnya cuma muncul saat **pindah
+halaman** — klik filter periode ("Hari ini"/"Bulan ini"/dst) tidak
+memicu itu karena cuma mengubah query string di URL yang sama, bukan
+pindah rute. Sekarang `PeriodFilter` pakai `useTransition` dari React
+supaya bisa kasih umpan baliknya sendiri:
+- Bar loading tipis muncul di paling atas layar
+- Tombol/chip yang baru ditekan menampilkan spinner kecil, tombol lain
+  meredup sementara (mencegah tap ganda selagi data masih diambil)
+- Di mobile, ikon panah di dropdown berubah jadi spinner selagi memuat
+
+## Perbaikan bug: badge jumlah di Kasir tidak hilang saat item dihapus
+
+Ditemukan lewat pengujian otomatis (bukan tebak-tebakan): dua elemen
+bersaudara di kartu produk Kasir sempat memakai `key` React yang sama
+persis (`key={qty}` di badge dan di pembungkus animasi), yang membuat
+React salah mencocokkan elemen saat re-render — badge jumlah bisa
+"nyangkut" menampilkan angka lama walau item itu sudah dihapus dari
+keranjang. Sudah diperbaiki dengan memberi key yang unik untuk masing-
+masing elemen.
+
 ## Umpan balik "satisfying" saat tap produk di Kasir
 
 - Tiap kali produk di-tap, kartunya memantul singkat (bukan cuma

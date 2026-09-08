@@ -93,6 +93,15 @@ button, a {
   100% { transform: scale(1); }
 }
 
+/* ---- Bar loading tipis saat ganti filter periode ---------------------
+   Dipakai PeriodFilter selagi useTransition pending (klik filter cuma
+   ganti query string di URL yang sama, jadi loading.tsx bawaan Next.js
+   tidak otomatis muncul — ini gantinya, murni fungsional). */
+@keyframes loading-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .skeleton-shimmer::after { animation: none; }
   .success-check-circle,
