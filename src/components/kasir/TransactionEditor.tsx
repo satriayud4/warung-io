@@ -268,13 +268,13 @@ export function TransactionEditor({
               >
                 {qty > 0 && (
                   <span
-                    key={qty}
+                    key={`badge-${qty}`}
                     className="qty-badge-pop absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-1.5 text-xs font-bold text-brand-600 shadow"
                   >
                     {qty}
                   </span>
                 )}
-                <span key={qty} className="product-tap-pop block">
+                <span key={`content-${qty}`} className="product-tap-pop block">
                   <p className={`text-sm font-semibold leading-snug ${tier.name}`}>{p.name}</p>
                   <p className={`mt-1 text-sm ${tier.price}`}>{formatRupiah(p.selling_price)}</p>
                 </span>
