@@ -129,17 +129,26 @@ supaya bisa kasih umpan baliknya sendiri:
   meredup sementara (mencegah tap ganda selagi data masih diambil)
 - Di mobile, ikon panah di dropdown berubah jadi spinner selagi memuat
 
-**Perbaikan lanjutan khusus mobile:** versi awal ada bug — dropdown native
-di HP nilainya (`value`) murni mengikuti prop `activePeriod` dari server,
-yang baru ter-update SETELAH data baru selesai dimuat. Akibatnya begitu
-Anda memilih opsi baru, dropdown sempat kembali menampilkan pilihan LAMA
-selama proses loading (terasa seperti pilihannya tidak kesimpan/nge-glitch).
-Sekarang dropdown menampilkan pilihan yang baru saja Anda tap secara
-optimistis (state lokal), baru disinkronkan ke data server setelah selesai
-— jadi tidak ada lagi efek "balik sendiri" itu. Field select juga tidak
-lagi di-disable saat loading (sebelumnya bikin tampilannya terasa
-"macet"/berubah drastis tepat setelah disentuh) — cukup ikon spinner saja
-sebagai penanda.
+**Perbaikan lanjutan (v1):** dropdown native di HP nilainya (`value`)
+sempat murni mengikuti prop `activePeriod` dari server, yang baru
+ter-update SETELAH data baru selesai dimuat. Akibatnya begitu Anda memilih
+opsi baru, dropdown sempat kembali menampilkan pilihan LAMA selama proses
+loading (terasa seperti pilihannya tidak kesimpan/nge-glitch). Sekarang
+dropdown menampilkan pilihan yang baru saja Anda tap secara optimistis
+(state lokal), baru disinkronkan ke data server setelah selesai. Field
+select juga tidak lagi di-disable saat loading (sebelumnya bikin
+tampilannya terasa "macet" tepat setelah disentuh) — cukup ikon spinner
+saja sebagai penanda.
+
+**Perbaikan lanjutan (v2):** spinner di dropdown sempat dibongkar-pasang
+tiap render (ganti-ganti antara ikon panah dan ikon spinner lewat
+conditional render) — di sebagian browser mobile, animasi CSS yang
+elemennya di-mount ulang akan restart dari awal tiap kali, yang bisa
+kelihatan seperti macet/patah-patah alih-alih muter mulus. Sekarang
+spinner-nya diganti jadi elemen CSS murni (border + rotate, bukan SVG
+berlapis) yang **selalu ter-mount di DOM** — cuma opacity-nya yang
+ditoggle, jadi animasinya tidak pernah restart dan selalu terlihat mulus
+begitu muncul.
 
 ## Perbaikan bug: badge jumlah di Kasir tidak hilang saat item dihapus
 

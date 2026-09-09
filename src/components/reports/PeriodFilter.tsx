@@ -4,6 +4,24 @@ import { useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { PERIOD_OPTIONS, type Period } from "@/lib/date-range";
 
+// Spinner CSS murni (border + rotate), bukan SVG dengan path/opacity
+// berlapis — lebih ringan untuk browser mobile render & composite-nya.
+// SELALU ter-mount di DOM (cuma opacity yang di-toggle, bukan
+// ditampilkan/disembunyikan lewat conditional render atau `hidden`).
+// Ini penting: kalau elemennya dibongkar-pasang tiap render, animasi
+// CSS-nya ikut restart dari awal tiap kali — di sebagian browser mobile
+// ini kelihatan seperti "macet"/patah-patah alih-alih muter mulus.
+function Spinner({ visible, className = "h-4 w-4" }: { visible: boolean; className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={`pointer-events-none absolute inset-0 m-auto animate-spin rounded-full border-2 border-brand-100 border-t-brand-500 transition-opacity duration-150 ${className} ${
+        visible ? "opacity-100" : "opacity-0"
+      }`}
+    />
+  );
+}
+
 export function PeriodFilter({
   activePeriod,
   from,
@@ -52,9 +70,7 @@ export function PeriodFilter({
           sedang diambil dari server, supaya tap terasa langsung
           direspons (bukan diam sesaat). */}
       {isPending && (
-        <div
-          className="fixed inset-x-0 top-[env(safe-area-inset-top)] z-50 h-0.5 overflow-hidden bg-brand-100"
-        >
+        <div className="fixed inset-x-0 top-[env(safe-area-inset-top)] z-50 h-0.5 overflow-hidden bg-brand-100">
           <div className="h-full w-1/3 animate-[loading-bar_0.9s_ease-in-out_infinite] bg-brand-500" />
         </div>
       )}
@@ -79,18 +95,11 @@ export function PeriodFilter({
               </option>
             ))}
           </select>
-          {isPending ? (
+          <div className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2">
             <svg
-              className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-brand-500"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4Z" />
-            </svg>
-          ) : (
-            <svg
-              className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+              className={`absolute inset-0 h-4 w-4 text-gray-400 transition-opacity duration-150 ${
+                isPending ? "opacity-0" : "opacity-100"
+              }`}
               viewBox="0 0 20 20"
               fill="none"
               stroke="currentColor"
@@ -100,7 +109,8 @@ export function PeriodFilter({
             >
               <path d="m5 8 5 5 5-5" />
             </svg>
-          )}
+            <Spinner visible={isPending} />
+          </div>
         </div>
       </div>
 
@@ -120,10 +130,7 @@ export function PeriodFilter({
               } ${isPending && !thisPending ? "opacity-50" : ""}`}
             >
               {thisPending && (
-                <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4Z" />
-                </svg>
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
               )}
               {opt.label}
             </button>
@@ -159,10 +166,7 @@ export function PeriodFilter({
             className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-3.5 py-2 text-sm font-semibold text-white disabled:opacity-60"
           >
             {isPending && pendingValue === "custom" && (
-              <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4Z" />
-              </svg>
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
             )}
             Terapkan
           </button>
