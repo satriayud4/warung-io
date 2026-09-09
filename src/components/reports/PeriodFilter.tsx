@@ -52,7 +52,9 @@ export function PeriodFilter({
           sedang diambil dari server, supaya tap terasa langsung
           direspons (bukan diam sesaat). */}
       {isPending && (
-        <div className="fixed inset-x-0 top-0 z-50 h-0.5 overflow-hidden bg-brand-100">
+        <div
+          className="fixed inset-x-0 top-[env(safe-area-inset-top)] z-50 h-0.5 overflow-hidden bg-brand-100"
+        >
           <div className="h-full w-1/3 animate-[loading-bar_0.9s_ease-in-out_infinite] bg-brand-500" />
         </div>
       )}
@@ -67,10 +69,9 @@ export function PeriodFilter({
         <div className="relative">
           <select
             id="period-select"
-            value={showCustom ? "custom" : activePeriod}
+            value={showCustom ? "custom" : isPending && pendingValue ? pendingValue : activePeriod}
             onChange={(e) => selectPeriod(e.target.value as Period)}
-            disabled={isPending}
-            className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-3 pl-4 pr-10 text-sm font-medium text-gray-800 shadow-sm disabled:opacity-60"
+            className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-3 pl-4 pr-10 text-sm font-medium text-gray-800 shadow-sm"
           >
             {PERIOD_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
