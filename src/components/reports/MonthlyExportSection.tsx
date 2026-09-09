@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { todayDateInputValue } from "@/lib/format";
 import {
   computeSummary,
   computeCategoryRows,
@@ -15,8 +16,8 @@ import {
 import { exportReportExcel, exportReportCsv } from "@/lib/export/generate-files";
 
 function currentMonthValue() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  // "YYYY-MM" dari tanggal WIB hari ini (bukan zona tempat kode ini jalan).
+  return todayDateInputValue().slice(0, 7);
 }
 
 function monthRange(monthValue: string): { from: string; to: string; label: string } {

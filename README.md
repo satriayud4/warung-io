@@ -116,6 +116,30 @@ berubah:
   (`prefers-reduced-motion`) — otomatis nonaktif kalau pengguna
   mengaktifkan itu di HP/komputernya.
 
+## Perbaikan bug: tanggal "hari ini" salah di sekitar tengah malam WIB
+
+**Penyebab:** aplikasi sebelumnya tidak punya patokan zona waktu tetap —
+"hari ini" dihitung berdasarkan jam **komputer/server yang menjalankan
+kode**, bukan WIB. Vercel (tempat aplikasi ini di-deploy) menjalankan
+server-nya di UTC. Karena WIB = UTC+7, ada jendela 7 jam tiap hari
+(kira-kira jam 00:00–06:59 WIB) di mana UTC masih menunjukkan tanggal
+**kemarin** — jadi Dashboard/Laporan/tanggal default Kasir & Pengeluaran
+sempat menampilkan tanggal yang salah (kurang satu hari) selama jendela
+itu, juga jam transaksi bisa salah tampil.
+
+**Perbaikan:** semua tempat yang menghitung "hari ini" atau memformat jam
+transaksi sekarang dikunci eksplisit ke zona waktu **Asia/Jakarta (WIB)**
+lewat `Intl.DateTimeFormat`/`toLocaleTimeString` dengan opsi `timeZone`,
+bukan lagi mengandalkan jam lokal environment tempat kode itu kebetulan
+dijalankan. Sudah diuji langsung dengan mensimulasikan server yang jalan
+di UTC pada jam 00:15 WIB — hasilnya sekarang benar menunjukkan tanggal
+hari yang sama dengan WIB, bukan mundur sehari.
+
+> Catatan: zona waktu dikunci ke WIB (`Asia/Jakarta`) karena itu yang
+> dipakai saat ini. Kalau warung Anda ada di zona WITA/WIT, tinggal ganti
+> nilai `APP_TIMEZONE` di `src/lib/format.ts` (misal ke `Asia/Makassar`
+> atau `Asia/Jayapura`) — satu tempat itu saja yang perlu diubah.
+
 ## Loading saat klik filter periode (Dashboard & Laporan)
 
 `loading.tsx` yang sudah ada sebelumnya cuma muncul saat **pindah

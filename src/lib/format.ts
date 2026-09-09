@@ -1,5 +1,12 @@
 // Shared display formatters used across the app.
 
+// Warung.io tidak punya preferensi zona waktu per akun — dikunci ke WIB
+// (Asia/Jakarta) supaya "hari ini" dan jam transaksi selalu konsisten,
+// baik dihitung di server (Vercel jalan pakai UTC secara default) maupun
+// di browser pengguna. Tanpa ini, "hari ini" versi server bisa beda
+// dengan versi WIB selama beberapa jam tiap harinya (WIB = UTC+7).
+export const APP_TIMEZONE = "Asia/Jakarta";
+
 export function formatRupiah(n: number | null | undefined) {
   if (n === null || n === undefined) return "-";
   return "Rp" + Math.round(n).toLocaleString("id-ID");
@@ -39,12 +46,14 @@ export function formatJam(isoString: string) {
   return new Date(isoString).toLocaleTimeString("id-ID", {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: APP_TIMEZONE,
   });
 }
 
 export function todayDateInputValue() {
-  const now = new Date();
-  const offset = now.getTimezoneOffset();
-  const local = new Date(now.getTime() - offset * 60 * 1000);
-  return local.toISOString().slice(0, 10);
+  // en-CA memformat sebagai YYYY-MM-DD langsung — pas untuk <input type="date">.
+  // Timezone dikunci eksplisit, tidak pakai getTimezoneOffset() lagi (itu
+  // ikut zona waktu tempat KODE-nya jalan, bukan zona waktu WIB — di server
+  // Vercel yang jalan UTC, itu bisa salah sampai 7 jam tiap hari).
+  return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE }).format(new Date());
 }

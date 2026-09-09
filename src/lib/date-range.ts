@@ -2,7 +2,7 @@
 // `period` (and `from`/`to` for custom) from the URL search params, so the
 // filter state is shareable/bookmarkable and needs no client-side state.
 
-import { formatHariTanggalLengkap, formatTanggalSaja } from "./format";
+import { formatHariTanggalLengkap, formatTanggalSaja, todayDateInputValue } from "./format";
 
 export type Period = "today" | "yesterday" | "7days" | "month" | "year" | "alltime" | "custom";
 
@@ -22,9 +22,19 @@ export const PERIOD_OPTIONS: { value: Period; label: string }[] = [
 ];
 
 function toDateStr(d: Date) {
-  const offset = d.getTimezoneOffset();
-  const local = new Date(d.getTime() - offset * 60 * 1000);
-  return local.toISOString().slice(0, 10);
+  // Sengaja TIDAK memakai getTimezoneOffset()/toISOString() di sini — itu
+  // ikut zona waktu tempat kode ini jalan (bisa UTC di server), bukan WIB.
+  // `d` di sini selalu sudah berupa tanggal kalender lokal (lihat
+  // todayInWIB di bawah), jadi baca langsung getFullYear/Month/Date aman.
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function todayInWIB(): Date {
+  const [y, m, d] = todayDateInputValue().split("-").map(Number);
+  return new Date(y, m - 1, d);
 }
 
 export function resolvePeriod(
@@ -32,7 +42,7 @@ export function resolvePeriod(
   from: string | undefined,
   to: string | undefined
 ): { period: Period; from: string; to: string } {
-  const today = new Date();
+  const today = todayInWIB();
   const todayStr = toDateStr(today);
 
   switch (period) {

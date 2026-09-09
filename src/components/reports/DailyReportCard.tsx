@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, APP_TIMEZONE } from "@/lib/format";
 import type { ReportData } from "@/lib/export/report-data";
 
 // Kartu ringkasan harian — dipakai sebagai preview di halaman DAN sebagai
@@ -65,6 +65,7 @@ export const DailyReportCard = forwardRef<HTMLDivElement, { data: ReportData }>(
                       {new Date(t.created_at).toLocaleTimeString("id-ID", {
                         hour: "2-digit",
                         minute: "2-digit",
+                        timeZone: APP_TIMEZONE,
                       })}{" "}
                       · {t.payment_method === "tunai" ? "Tunai" : "Non-tunai"}
                     </span>

@@ -3,6 +3,8 @@
 // either from server-rendered props (Laporan page) or an on-demand client
 // fetch (export per bulan).
 
+import { APP_TIMEZONE } from "@/lib/format";
+
 export type ReportSummary = {
   omzet: number;
   modal: number;
@@ -102,6 +104,7 @@ export function flattenDetailedRows(transactions: DetailedTransaction[]): Detail
     const time = new Date(t.created_at).toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: APP_TIMEZONE,
     });
 
     for (const item of t.transaction_items) {
