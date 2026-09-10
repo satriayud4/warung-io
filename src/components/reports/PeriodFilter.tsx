@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { PERIOD_OPTIONS, type Period } from "@/lib/date-range";
 
@@ -40,6 +40,33 @@ export function PeriodFilter({
   // di sini.
   const [isPending, startTransition] = useTransition();
 
+  // Di koneksi/perangkat cepat (biasanya PC), transisinya bisa selesai
+  // dalam hitungan puluhan milidetik — spinner-nya kedip sekilas lalu
+  // hilang sebelum sempat kelihatan, terasa seperti "tidak ada loading
+  // sama sekali". Di HP/koneksi lebih lambat, jendelanya cukup lama jadi
+  // jelas kelihatan. `showLoading` memastikan indikatornya tampil minimal
+  // ~400ms sekali muncul, konsisten di perangkat apa pun secepat apa pun
+  // datanya sebenarnya selesai diambil.
+  const [showLoading, setShowLoading] = useState(false);
+  const pendingStartedAt = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (isPending) {
+      pendingStartedAt.current = Date.now();
+      setShowLoading(true);
+      return;
+    }
+    if (pendingStartedAt.current === null) return;
+    const elapsed = Date.now() - pendingStartedAt.current;
+    const MIN_VISIBLE_MS = 400;
+    const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+      pendingStartedAt.current = null;
+    }, remaining);
+    return () => clearTimeout(timer);
+  }, [isPending]);
+
   const [customFrom, setCustomFrom] = useState(from);
   const [customTo, setCustomTo] = useState(to);
   const [showCustom, setShowCustom] = useState(activePeriod === "custom");
@@ -69,7 +96,7 @@ export function PeriodFilter({
       {/* Bar loading tipis di atas — muncul selagi data periode baru
           sedang diambil dari server, supaya tap terasa langsung
           direspons (bukan diam sesaat). */}
-      {isPending && (
+      {showLoading && (
         <div className="fixed inset-x-0 top-[env(safe-area-inset-top)] z-50 h-0.5 overflow-hidden bg-brand-100">
           <div className="h-full w-1/3 animate-[loading-bar_0.9s_ease-in-out_infinite] bg-brand-500" />
         </div>
@@ -85,7 +112,7 @@ export function PeriodFilter({
         <div className="relative">
           <select
             id="period-select"
-            value={showCustom ? "custom" : isPending && pendingValue ? pendingValue : activePeriod}
+            value={showCustom ? "custom" : showLoading && pendingValue ? pendingValue : activePeriod}
             onChange={(e) => selectPeriod(e.target.value as Period)}
             className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-3 pl-4 pr-10 text-sm font-medium text-gray-800 shadow-sm"
           >
@@ -98,7 +125,7 @@ export function PeriodFilter({
           <div className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2">
             <svg
               className={`absolute inset-0 h-4 w-4 text-gray-400 transition-opacity duration-150 ${
-                isPending ? "opacity-0" : "opacity-100"
+                showLoading ? "opacity-0" : "opacity-100"
               }`}
               viewBox="0 0 20 20"
               fill="none"
@@ -109,7 +136,7 @@ export function PeriodFilter({
             >
               <path d="m5 8 5 5 5-5" />
             </svg>
-            <Spinner visible={isPending} />
+            <Spinner visible={showLoading} />
           </div>
         </div>
       </div>
@@ -119,15 +146,15 @@ export function PeriodFilter({
       <div className="hidden gap-1.5 overflow-x-auto pb-1 md:flex">
         {PERIOD_OPTIONS.map((opt) => {
           const active = activePeriod === opt.value || (opt.value === "custom" && showCustom);
-          const thisPending = isPending && pendingValue === opt.value;
+          const thisPending = showLoading && pendingValue === opt.value;
           return (
             <button
               key={opt.value}
               onClick={() => selectPeriod(opt.value)}
-              disabled={isPending}
+              disabled={showLoading}
               className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition disabled:cursor-wait ${
                 active ? "bg-brand-500 text-white" : "bg-white text-gray-600 ring-1 ring-gray-200"
-              } ${isPending && !thisPending ? "opacity-50" : ""}`}
+              } ${showLoading && !thisPending ? "opacity-50" : ""}`}
             >
               {thisPending && (
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -162,10 +189,10 @@ export function PeriodFilter({
           </div>
           <button
             onClick={applyCustom}
-            disabled={isPending}
+            disabled={showLoading}
             className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-3.5 py-2 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {isPending && pendingValue === "custom" && (
+            {showLoading && pendingValue === "custom" && (
               <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
             )}
             Terapkan

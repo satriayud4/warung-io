@@ -174,6 +174,14 @@ berlapis) yang **selalu ter-mount di DOM** — cuma opacity-nya yang
 ditoggle, jadi animasinya tidak pernah restart dan selalu terlihat mulus
 begitu muncul.
 
+**Perbaikan lanjutan (v3):** di PC/koneksi cepat, transisinya kadang
+selesai dalam puluhan milidetik — spinner-nya kedip sekilas lalu hilang
+sebelum sempat kelihatan jelas (beda dengan HP/koneksi lebih lambat yang
+jendela loading-nya cukup lama untuk terlihat, makanya sempat terasa
+"cuma hilang pas di PC, di HP aman"). Sekarang indikator loading dijamin
+tampil **minimal ~400ms** sekali muncul, jadi konsisten kelihatan di
+perangkat apa pun secepat apa pun data sebenarnya selesai diambil.
+
 ## Perbaikan bug: badge jumlah di Kasir tidak hilang saat item dihapus
 
 Ditemukan lewat pengujian otomatis (bukan tebak-tebakan): dua elemen
