@@ -15,7 +15,7 @@ function Spinner({ visible, className = "h-4 w-4" }: { visible: boolean; classNa
   return (
     <span
       aria-hidden
-      className={`pointer-events-none absolute inset-0 m-auto animate-spin rounded-full border-2 border-brand-100 border-t-brand-500 transition-opacity duration-150 ${className} ${
+      className={`pointer-events-none absolute inset-0 m-auto animate-spin rounded-full border-2 border-brand-100 border-t-brand-500 transition-opacity duration-150 will-change-transform ${className} ${
         visible ? "opacity-100" : "opacity-0"
       }`}
     />
@@ -75,6 +75,12 @@ export function PeriodFilter({
   function selectPeriod(p: Period) {
     if (p === "custom") {
       setShowCustom(true);
+      return;
+    }
+    // Kalau filter yang diklik memang sudah aktif, jangan lakukan apa-apa
+    // — datanya sudah pasti sama, tidak perlu reload (dan cuma bikin
+    // bingung karena loading muncul padahal tidak ada yang berubah).
+    if (p === activePeriod && !showCustom) {
       return;
     }
     setShowCustom(false);
@@ -145,20 +151,28 @@ export function PeriodFilter({
           sekaligus tanpa perlu buka dropdown. */}
       <div className="hidden gap-1.5 overflow-x-auto pb-1 md:flex">
         {PERIOD_OPTIONS.map((opt) => {
-          const active = activePeriod === opt.value || (opt.value === "custom" && showCustom);
           const thisPending = showLoading && pendingValue === opt.value;
+          // Tombol yang baru saja di-tap langsung dianggap "aktif" (hijau)
+          // secara optimistis, tidak nunggu activePeriod dari server dulu.
+          // Tanpa ini, tombol yang baru diklik untuk PINDAH filter masih
+          // putih selama loading (activePeriod belum ter-update), dan
+          // spinner putih di atas latar putih jadi tidak kelihatan sama
+          // sekali — persis bug yang bikin klik pertama terasa "kosong".
+          const active =
+            activePeriod === opt.value || (opt.value === "custom" && showCustom) || thisPending;
           return (
             <button
               key={opt.value}
               onClick={() => selectPeriod(opt.value)}
               disabled={showLoading}
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition disabled:cursor-wait ${
+              className={`relative flex shrink-0 items-center gap-1.5 rounded-full py-2 pl-3.5 pr-3.5 text-sm font-medium transition disabled:cursor-wait ${
                 active ? "bg-brand-500 text-white" : "bg-white text-gray-600 ring-1 ring-gray-200"
               } ${showLoading && !thisPending ? "opacity-50" : ""}`}
+              style={{ paddingLeft: thisPending ? "1.625rem" : undefined }}
             >
-              {thisPending && (
-                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-              )}
+              <span className="relative -ml-0.5 inline-block h-3.5 w-3.5">
+                <Spinner visible={thisPending} className="h-3.5 w-3.5 border-white/40 border-t-white" />
+              </span>
               {opt.label}
             </button>
           );
@@ -193,7 +207,7 @@ export function PeriodFilter({
             className="flex items-center gap-1.5 rounded-lg bg-brand-500 px-3.5 py-2 text-sm font-semibold text-white disabled:opacity-60"
           >
             {showLoading && pendingValue === "custom" && (
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white will-change-transform" />
             )}
             Terapkan
           </button>

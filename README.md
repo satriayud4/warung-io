@@ -182,6 +182,24 @@ jendela loading-nya cukup lama untuk terlihat, makanya sempat terasa
 tampil **minimal ~400ms** sekali muncul, jadi konsisten kelihatan di
 perangkat apa pun secepat apa pun data sebenarnya selesai diambil.
 
+**Perbaikan lanjutan (v4):** ini penyebab persis dari "klik pertama tidak
+kelihatan apa-apa, cuma tombolnya agak panjang" — saat Anda klik filter
+yang **belum aktif** (misal dari "Bulan ini" pindah ke "7 hari"), tombol
+"7 hari" masih berwarna putih selama proses loading (warna hijaunya baru
+muncul setelah data selesai dimuat), padahal spinner-nya berwarna putih
+juga — jadi spinner putih di atas tombol putih otomatis tidak kelihatan
+sama sekali, cuma nambah sedikit lebar tombol karena ruang buat spinner-nya
+tetap dialokasikan. Begitu tombol itu ditekan lagi (klik kedua, saat sudah
+hijau), spinner putih-nya baru kontras dan kelihatan muter. Sekarang tombol
+yang baru ditekan langsung dianggap "aktif" (hijau) secara optimistis,
+tidak menunggu data selesai dulu — jadi spinner-nya kontras dan kelihatan
+sejak klik pertama.
+
+Sekalian ditambahkan: **klik filter yang sudah aktif sekarang tidak
+melakukan apa-apa** (sebelumnya tetap reload walau datanya pasti sama
+persis, yang juga berkontribusi ke kebingungan di skenario yang
+dilaporkan).
+
 ## Perbaikan bug: badge jumlah di Kasir tidak hilang saat item dihapus
 
 Ditemukan lewat pengujian otomatis (bukan tebak-tebakan): dua elemen
