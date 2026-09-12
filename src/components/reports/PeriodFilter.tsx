@@ -165,14 +165,13 @@ export function PeriodFilter({
               key={opt.value}
               onClick={() => selectPeriod(opt.value)}
               disabled={showLoading}
-              className={`relative flex shrink-0 items-center gap-1.5 rounded-full py-2 pl-3.5 pr-3.5 text-sm font-medium transition disabled:cursor-wait ${
+              className={`flex shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition disabled:cursor-wait ${
                 active ? "bg-brand-500 text-white" : "bg-white text-gray-600 ring-1 ring-gray-200"
               } ${showLoading && !thisPending ? "opacity-50" : ""}`}
-              style={{ paddingLeft: thisPending ? "1.625rem" : undefined }}
             >
-              <span className="relative -ml-0.5 inline-block h-3.5 w-3.5">
-                <Spinner visible={thisPending} className="h-3.5 w-3.5 border-white/40 border-t-white" />
-              </span>
+              {thisPending && (
+                <span className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-white/40 border-t-white will-change-transform" />
+              )}
               {opt.label}
             </button>
           );

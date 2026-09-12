@@ -200,6 +200,15 @@ melakukan apa-apa** (sebelumnya tetap reload walau datanya pasti sama
 persis, yang juga berkontribusi ke kebingungan di skenario yang
 dilaporkan).
 
+**Perbaikan lanjutan (v5):** trik "spinner selalu ter-mount" dari v2 di
+atas ternyata punya efek samping di tombol chip desktop — ruang buat
+spinner-nya tetap dialokasikan permanen (walau tidak kelihatan/opacity 0),
+jadi teksnya kegeser tidak center dalam tombol setiap saat, bukan cuma
+pas loading. Untuk chip desktop trik itu ternyata tidak diperlukan (beda
+dengan dropdown mobile) — cukup pakai `justify-center` dan spinner yang
+cuma muncul/hilang biasa saat benar-benar loading. Dropdown mobile tetap
+pakai versi "selalu ter-mount" karena di situ memang perlu.
+
 ## Perbaikan bug: badge jumlah di Kasir tidak hilang saat item dihapus
 
 Ditemukan lewat pengujian otomatis (bukan tebak-tebakan): dua elemen
