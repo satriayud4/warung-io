@@ -282,6 +282,22 @@ Sudah diuji langsung (bukan cuma dibangun lalu didoakan): parser tanggal,
 parser intent, dan seluruh lapisan jawaban dites dengan berbagai
 pertanyaan & kasus kosong sebelum dipasang ke UI.
 
+**Peningkatan lanjutan:** parser tanggalnya diperkuat untuk menutup
+beberapa celah nyata yang ditemukan lewat pengujian — sebelumnya rentang
+tanggal **lintas bulan** ("25 Agustus sampai 5 September") salah dibaca
+diam-diam jadi cuma "25 Agustus" (bug serius karena hasilnya salah tanpa
+pemberitahuan, padahal prinsip io adalah tidak boleh salah hitung diam-diam).
+Sekarang io juga mengerti:
+- Rentang lintas bulan: "25 Agustus sampai 5 September"
+- Nama bulan disebut dua kali: "1 September sampai 15 September"
+- Bulan disebut namanya saja tanpa "ini"/"lalu": "omzet bulan September"
+- Tanggal saja tanpa nama bulan (asumsi bulan berjalan): "tanggal 5 berapa"
+- Format angka: "10/09/2026", "10-9-2026"
+- Singkatan bulan: "Sept", "Agt", "Nov", dst.
+
+Sudah diuji ulang dengan 18 variasi pertanyaan (termasuk semua yang sudah
+berjalan sebelumnya, dipastikan tidak ada yang regresi) sebelum dipasang.
+
 ## Kategori produk (Makanan/Minuman/Snack/Lainnya)
 
 - Setiap produk sekarang punya kategori — pilihannya: Makanan, Minuman,
