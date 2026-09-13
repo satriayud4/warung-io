@@ -242,6 +242,46 @@ ketik ulang password lama (mengandalkan sesi login yang sudah aktif, sama
 seperti kebanyakan aplikasi lain). Kalau memang lupa password dan sedang
 tidak login sama sekali, tetap pakai alur "Lupa Password" di halaman login.
 
+## Tanya io — AI assistant untuk tanya-jawab data warung
+
+Panel baru di bagian bawah Dashboard: **"💬 Tanya io"**. Pemilik warung bisa
+tanya hal-hal seperti "omzet hari ini berapa?", "produk apa yang paling
+laku bulan ini?", atau "bandingkan omzet minggu ini dengan minggu lalu" —
+dijawab pakai bahasa Indonesia yang santai, berdasarkan data transaksi
+yang sungguhan ada di database.
+
+**Arsitektur (3 lapis, sengaja dipisah tegas):**
+1. **Intent + tanggal** (`src/lib/io/date-parser.ts`,
+   `src/lib/io/intent-parser.ts`) — murni aturan/regex, BUKAN AI. Mengubah
+   pertanyaan jadi maksud terstruktur ("omzet", "produk terlaris",
+   "bandingkan", dst) + rentang tanggal ("hari ini", "bulan lalu",
+   "1–10 September", dst).
+2. **Data** (`src/lib/io/data.ts`) — mengambil angka asli dari Supabase
+   (pakai tabel & fungsi yang SAMA dengan yang dipakai Laporan/Dashboard,
+   tidak ada query baru yang aneh-aneh).
+3. **Jawaban** (`src/lib/io/respond.ts`) — mengubah angka yang sudah pasti
+   benar itu jadi kalimat hangat, dengan beberapa variasi kalimat supaya
+   tidak terasa template kaku. Kalau datanya kosong, io bilang jujur
+   "belum ada data" — tidak pernah mengarang angka.
+
+Ketiga lapis ini disatukan di `src/lib/io/engine.ts`, dipanggil dari
+`src/app/api/io/ask/route.ts` (Route Handler server-side — perhitungan
+tidak pernah jalan di browser).
+
+**Kenapa belum pakai AI generatif (LLM) beneran?** Supaya io tidak pernah
+salah tafsir tanggal atau mengarang angka, langkah "pahami pertanyaan"
+sengaja pakai aturan eksplisit dulu, bukan minta AI menebak. Tapi
+strukturnya sudah disiapkan untuk upgrade: `parseIntent()` di
+`intent-parser.ts` bisa diganti jadi panggilan ke AI API (taruh API key-nya
+di environment variable server, misal `ANTHROPIC_API_KEY` di
+`.env.local`/Vercel — **jangan pernah** ditaruh di kode frontend), selama
+hasilnya tetap mengikuti bentuk `Intent` yang sama, lapisan data & jawaban
+tidak perlu disentuh sama sekali.
+
+Sudah diuji langsung (bukan cuma dibangun lalu didoakan): parser tanggal,
+parser intent, dan seluruh lapisan jawaban dites dengan berbagai
+pertanyaan & kasus kosong sebelum dipasang ke UI.
+
 ## Kategori produk (Makanan/Minuman/Snack/Lainnya)
 
 - Setiap produk sekarang punya kategori — pilihannya: Makanan, Minuman,
