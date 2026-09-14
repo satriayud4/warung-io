@@ -5,6 +5,7 @@ import { resolvePeriod, formatPeriodLabel } from "@/lib/date-range";
 import { PeriodFilter } from "@/components/reports/PeriodFilter";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IoAskPanel } from "@/components/io/IoAskPanel";
+import { PerjalananWarung } from "@/components/io/PerjalananWarung";
 
 type ProductSales = { product_name: string; quantity: number; omzet: number; laba: number };
 
@@ -175,6 +176,8 @@ export default async function DashboardPage({
           </div>
         )}
       </div>
+
+      <PerjalananWarung />
 
       <IoAskPanel />
     </div>

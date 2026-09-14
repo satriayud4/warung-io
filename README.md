@@ -242,6 +242,28 @@ ketik ulang password lama (mengandalkan sesi login yang sudah aktif, sama
 seperti kebanyakan aplikasi lain). Kalau memang lupa password dan sedang
 tidak login sama sekali, tetap pakai alur "Lupa Password" di halaman login.
 
+## Perjalanan Warung — timeline milestone di Dashboard
+
+Card baru di Dashboard: **"📈 Perjalanan Warung"**, menampilkan perkembangan
+usaha dari waktu ke waktu lewat milestone yang dihitung murni dari data
+transaksi asli:
+
+- 🌱 Transaksi pertama kali tercatat
+- 🔥/🏆 Jumlah transaksi (100, 500, 1.000, 5.000, 10.000 — cuma yang sudah
+  sungguh tercapai)
+- 📈 Omzet kumulatif (Rp1 juta, Rp5 juta, Rp10 juta, Rp25 juta, Rp50 juta,
+  Rp100 juta — cuma yang sudah sungguh terlampaui)
+- 🚀 Bulan dengan omzet tertinggi (cuma muncul kalau datanya sudah
+  mencakup minimal 2 bulan berbeda — kalau baru 1 bulan, "tertinggi" tidak
+  bermakna apa-apa, jadi sengaja tidak ditampilkan)
+
+**Tidak ada milestone palsu**: kalau suatu ambang batas belum tercapai,
+milestone-nya memang tidak muncul sama sekali — bukan diisi placeholder
+atau tanggal karangan. Perhitungannya (`src/lib/io/milestones.ts`) dipisah
+dari tampilan, dan sudah diuji dengan data contoh (kosong, 1 bulan belum
+capai apa-apa, dan skenario 2 bulan dengan beberapa milestone tercapai)
+sebelum dipasang ke Dashboard — urutan kronologisnya dipastikan benar.
+
 ## Tanya io — AI assistant untuk tanya-jawab data warung
 
 Panel baru di bagian bawah Dashboard: **"💬 Tanya io"**. Pemilik warung bisa
