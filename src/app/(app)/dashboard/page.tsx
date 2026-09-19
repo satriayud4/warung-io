@@ -6,6 +6,7 @@ import { PeriodFilter } from "@/components/reports/PeriodFilter";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IoAskPanel } from "@/components/io/IoAskPanel";
 import { PerjalananWarung } from "@/components/io/PerjalananWarung";
+import { IoGreeting } from "@/components/io/IoGreeting";
 
 type ProductSales = { product_name: string; quantity: number; omzet: number; laba: number };
 
@@ -17,15 +18,6 @@ export default async function DashboardPage({
   searchParams: { period?: string; from?: string; to?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("name")
-    .eq("id", session!.user.id)
-    .single();
 
   const { period, from, to } = resolvePeriod(
     searchParams.period,
@@ -76,8 +68,9 @@ export default async function DashboardPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      <IoGreeting />
+
       <div>
-        <p className="text-sm text-gray-500">Selamat datang, {profile?.name ?? "Kembali"} 👋</p>
         <h1 className="text-lg font-semibold">{formatPeriodLabel(period, from, to)}</h1>
       </div>
 

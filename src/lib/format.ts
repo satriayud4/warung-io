@@ -57,3 +57,15 @@ export function todayDateInputValue() {
   // Vercel yang jalan UTC, itu bisa salah sampai 7 jam tiap hari).
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE }).format(new Date());
 }
+
+export function currentHourInAppTimezone(): number {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: APP_TIMEZONE,
+    hour: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const hourPart = parts.find((p) => p.type === "hour");
+  // "24" muncul untuk tengah malam di beberapa runtime ICU — perlakukan sebagai 0.
+  const hour = hourPart ? parseInt(hourPart.value, 10) : 0;
+  return hour === 24 ? 0 : hour;
+}

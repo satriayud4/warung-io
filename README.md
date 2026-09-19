@@ -242,6 +242,33 @@ ketik ulang password lama (mengandalkan sesi login yang sudah aktif, sama
 seperti kebanyakan aplikasi lain). Kalau memang lupa password dan sedang
 tidak login sama sekali, tetap pakai alur "Lupa Password" di halaman login.
 
+## Sapaan personal dari io di Dashboard
+
+Sapaan statis lama ("Selamat datang, {nama} 👋") diganti kartu **io**
+paling atas Dashboard — salam sesuai waktu (pagi/siang/sore/malam, dihitung
+di WIB) + satu insight yang paling relevan dari data transaksi asli.
+
+**Prioritas pemilihan pesan** (dari yang paling spesifik & segar ke yang
+paling umum — berhenti di yang pertama datanya cukup):
+1. Ada transaksi hari ini **dan** kemarin → bandingkan langsung: "Hari ini
+   omzetmu sudah Rp350.000, naik 17% dibanding kemarin 🚀"
+2. Ada transaksi hari ini saja (kemarin kosong) → sebut angka hari ini
+   tanpa klaim naik/turun (karena tidak ada dasar pembanding yang valid).
+3. Belum ada transaksi hari ini, tapi minggu ini & minggu lalu ada datanya
+   → bandingkan mingguan: "Pelan-pelan, tapi kelihatan perkembangannya 🚀"
+4. Minggu ini ada data tapi minggu lalu kosong → sebut angka minggu ini
+   saja, tanpa klaim persentase.
+5. Cuma kemarin yang ada datanya → sebut itu, ajak buka Kasir.
+6. Sama sekali belum ada transaksi (akun/warung baru) → sapaan umum, ajak
+   mulai catat transaksi pertama — tidak ada satu pun angka disebut.
+
+Poin pentingnya: io **tidak pernah** bilang "naik X%" atau "kelihatan
+berkembang" kecuali ada dua angka asli yang mendukung klaim itu (yang
+dibandingkan harus > 0, bukan dibagi nol). Logika pemilihan pesan
+(`src/lib/io/greeting.ts`) dipisah dari pengambilan data
+(`greeting-data.ts`) dan sudah diuji dengan 9 skenario data berbeda
+(termasuk semua kombinasi "data ada/tidak ada" di atas) sebelum dipasang.
+
 ## Perjalanan Warung — timeline milestone di Dashboard
 
 Card baru di Dashboard: **"📈 Perjalanan Warung"**, menampilkan perkembangan
