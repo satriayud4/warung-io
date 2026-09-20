@@ -242,6 +242,20 @@ ketik ulang password lama (mengandalkan sesi login yang sudah aktif, sama
 seperti kebanyakan aplikasi lain). Kalau memang lupa password dan sedang
 tidak login sama sekali, tetap pakai alur "Lupa Password" di halaman login.
 
+## Polish gaya bicara io
+
+Kalimat jawaban io di `src/lib/io/respond.ts` dibuat lebih singkat dan
+natural — gaya teman yang bantu lihat data, bukan laporan formal:
+
+- Sebelum: "Omzetmu untuk hari ini adalah Rp420.000, dari 18 transaksi."
+- Sekarang: "Omzetmu hari ini Rp420.000 dari 18 transaksi."
+
+Emoji dipakai secukupnya — maksimal satu per jawaban, cuma di momen yang
+memang pas (mis. "Naik nih 👀 Omzet hari ini 15% lebih tinggi dari
+kemarin."), tidak ditumpuk di satu kalimat. Ini murni perubahan teks —
+tidak ada logika, data, atau desain yang berubah (ukuran semua halaman
+setelah build persis sama seperti sebelumnya).
+
 ## Sapaan personal dari io di Dashboard
 
 Sapaan statis lama ("Selamat datang, {nama} 👋") diganti kartu **io**

@@ -1,6 +1,7 @@
 // Lapisan JAWABAN — mengubah angka yang SUDAH dihitung (dari data.ts) jadi
-// kalimat hangat ala "io". Tidak ada perhitungan apa pun di sini, cuma
-// menyusun kata-kata dari angka yang sudah pasti benar.
+// kalimat ala "io": singkat, natural, kayak teman ngobrol, bukan laporan
+// formal. Tidak ada perhitungan apa pun di sini, cuma menyusun kata-kata
+// dari angka yang sudah pasti benar.
 
 import { formatRupiah } from "@/lib/format";
 import type { DateRange } from "./date-parser";
@@ -25,11 +26,11 @@ function daysBetween(from: string, to: string): number {
 
 export function respondOmzet(range: DateRange, data: OmzetData): IoAnswer {
   if (data.transaksiCount === 0) {
-    return { answer: `Belum ada transaksi tercatat untuk ${range.label}, jadi aku belum bisa menghitung omzetnya.` };
+    return { answer: `Belum ada transaksi yang tercatat untuk ${range.label}.` };
   }
   const answer = pick([
-    `Omzetmu untuk ${range.label} adalah ${formatRupiah(data.omzet)}, dari ${data.transaksiCount} transaksi.`,
-    `Untuk ${range.label}, total omzetmu ${formatRupiah(data.omzet)} (${data.transaksiCount} transaksi).`,
+    `Omzetmu ${range.label} ${formatRupiah(data.omzet)} dari ${data.transaksiCount} transaksi.`,
+    `${data.transaksiCount} transaksi ${range.label}, omzetnya ${formatRupiah(data.omzet)}.`,
   ]);
   return {
     answer,
@@ -46,24 +47,24 @@ export function respondOmzet(range: DateRange, data: OmzetData): IoAnswer {
 
 export function respondTransaksiCount(range: DateRange, data: OmzetData): IoAnswer {
   if (data.transaksiCount === 0) {
-    return { answer: `Belum ada transaksi tercatat untuk ${range.label}.` };
+    return { answer: `Belum ada transaksi yang tercatat untuk ${range.label}.` };
   }
   return {
     answer: pick([
-      `Untuk ${range.label}, kamu sudah mencatat ${data.transaksiCount} transaksi.`,
-      `Ada ${data.transaksiCount} transaksi tercatat untuk ${range.label}.`,
+      `Ada ${data.transaksiCount} transaksi ${range.label}.`,
+      `${data.transaksiCount} transaksi tercatat ${range.label}.`,
     ]),
   };
 }
 
 export function respondProfit(range: DateRange, data: ProfitData): IoAnswer {
   if (data.transaksiCount === 0) {
-    return { answer: `Belum ada transaksi tercatat untuk ${range.label}, jadi aku belum bisa menghitung keuntungannya.` };
+    return { answer: `Belum ada transaksi yang tercatat untuk ${range.label}, jadi belum ada untung yang bisa dihitung.` };
   }
   return {
     answer: pick([
-      `Keuntungan bersihmu untuk ${range.label} sekitar ${formatRupiah(data.labaBersih)}, setelah dikurangi pengeluaran ${formatRupiah(data.pengeluaran)}.`,
-      `Untuk ${range.label}, laba bersihmu ${formatRupiah(data.labaBersih)} (laba kotor ${formatRupiah(data.labaKotor)} dikurangi pengeluaran ${formatRupiah(data.pengeluaran)}).`,
+      `Untung bersihmu ${range.label} sekitar ${formatRupiah(data.labaBersih)}.`,
+      `${range.label}, untungnya ${formatRupiah(data.labaBersih)} — setelah dikurangi pengeluaran ${formatRupiah(data.pengeluaran)}.`,
     ]),
     breakdown: [
       { label: "Laba Kotor", value: formatRupiah(data.labaKotor) },
@@ -75,12 +76,12 @@ export function respondProfit(range: DateRange, data: ProfitData): IoAnswer {
 
 export function respondTopProduct(range: DateRange, product: TopProduct): IoAnswer {
   if (!product) {
-    return { answer: `Belum ada produk yang terjual untuk ${range.label}, jadi aku belum bisa menentukan yang paling laku.` };
+    return { answer: `Belum ada produk yang terjual untuk ${range.label}.` };
   }
   return {
     answer: pick([
-      `Produk paling laku untuk ${range.label} adalah ${product.name}, terjual ${product.quantity} kali.`,
-      `${product.name} jadi yang paling laku untuk ${range.label} — sudah ${product.quantity} kali terjual.`,
+      `${product.name} paling laku ${range.label}, ${product.quantity}x terjual.`,
+      `Yang paling laku ${range.label}: ${product.name}, ${product.quantity}x terjual.`,
     ]),
     breakdown: [
       { label: "Produk", value: product.name },
@@ -92,7 +93,7 @@ export function respondTopProduct(range: DateRange, product: TopProduct): IoAnsw
 
 export function respondBestDay(range: DateRange, day: BestDay): IoAnswer {
   if (!day) {
-    return { answer: `Belum ada transaksi tercatat untuk ${range.label}, jadi aku belum bisa menentukan hari terbaiknya.` };
+    return { answer: `Belum ada transaksi yang tercatat untuk ${range.label}.` };
   }
   const [y, m, d] = day.date.split("-").map(Number);
   const label = new Date(y, m - 1, d).toLocaleDateString("id-ID", {
@@ -101,18 +102,18 @@ export function respondBestDay(range: DateRange, day: BestDay): IoAnswer {
     month: "long",
   });
   return {
-    answer: `Untuk ${range.label}, omzet tertinggimu ada di hari ${label} — ${formatRupiah(day.omzet)}.`,
+    answer: `Omzet tertinggi ${range.label} ada di hari ${label}, ${formatRupiah(day.omzet)}.`,
   };
 }
 
 export function respondAvgPerDay(range: DateRange, data: OmzetData): IoAnswer {
   if (data.transaksiCount === 0) {
-    return { answer: `Belum ada transaksi tercatat untuk ${range.label}.` };
+    return { answer: `Belum ada transaksi yang tercatat untuk ${range.label}.` };
   }
   const days = daysBetween(range.from, range.to);
   const avg = data.omzet / days;
   return {
-    answer: `Rata-rata omzetmu untuk ${range.label} sekitar ${formatRupiah(avg)} per hari (dari total ${formatRupiah(data.omzet)} selama ${days} hari).`,
+    answer: `Rata-rata omzetmu ${range.label} sekitar ${formatRupiah(avg)} per hari.`,
   };
 }
 
@@ -123,14 +124,14 @@ export function respondCompare(
   currentValue: number,
   previousValue: number
 ): IoAnswer {
-  const metricLabel = metric === "omzet" ? "Omzet" : "Laba bersih";
+  const metricLabel = metric === "omzet" ? "Omzet" : "Untung bersih";
 
   if (currentValue === 0 && previousValue === 0) {
     return { answer: `Belum ada data ${metricLabel.toLowerCase()} untuk ${current.label} maupun ${previous.label}.` };
   }
   if (previousValue === 0) {
     return {
-      answer: `${metricLabel} untuk ${current.label} sudah ${formatRupiah(currentValue)}. Belum ada data pembanding di ${previous.label}, jadi aku belum bisa hitung persentase kenaikannya.`,
+      answer: `${metricLabel} ${current.label} udah ${formatRupiah(currentValue)}. Belum ada pembanding di ${previous.label}, jadi belum bisa dihitung persentasenya.`,
     };
   }
 
@@ -139,28 +140,39 @@ export function respondCompare(
 
   if (diff === 0) {
     return {
-      answer: `${metricLabel} untuk ${current.label} sama persis dengan ${previous.label}, yaitu ${formatRupiah(currentValue)}.`,
+      answer: `${metricLabel} ${current.label} sama persis dengan ${previous.label}, ${formatRupiah(currentValue)}.`,
     };
   }
 
-  const arah = diff > 0 ? "naik" : "turun";
+  const breakdown = [
+    { label: current.label, value: formatRupiah(currentValue) },
+    { label: previous.label, value: formatRupiah(previousValue) },
+    { label: "Perubahan", value: `${diff > 0 ? "+" : ""}${pct}%` },
+  ];
+
+  if (diff > 0) {
+    return {
+      answer: pick([
+        `Naik nih 👀 ${metricLabel} ${current.label} ${Math.abs(pct)}% lebih tinggi dari ${previous.label}.`,
+        `${metricLabel} ${current.label} naik ${Math.abs(pct)}% dibanding ${previous.label}.`,
+      ]),
+      breakdown,
+    };
+  }
+
   return {
     answer: pick([
-      `${metricLabel} ${current.label} ${arah} sekitar ${Math.abs(pct)}% dibanding ${previous.label} (${formatRupiah(currentValue)} vs ${formatRupiah(previousValue)}).`,
-      `Dibanding ${previous.label}, ${metricLabel.toLowerCase()} ${current.label} ${arah} ${Math.abs(pct)}% — dari ${formatRupiah(previousValue)} jadi ${formatRupiah(currentValue)}.`,
+      `${metricLabel} ${current.label} turun ${Math.abs(pct)}% dibanding ${previous.label}.`,
+      `Agak turun, ${metricLabel.toLowerCase()} ${current.label} ${Math.abs(pct)}% lebih rendah dari ${previous.label}.`,
     ]),
-    breakdown: [
-      { label: current.label, value: formatRupiah(currentValue) },
-      { label: previous.label, value: formatRupiah(previousValue) },
-      { label: "Perubahan", value: `${diff > 0 ? "+" : ""}${pct}%` },
-    ],
+    breakdown,
   };
 }
 
 export function respondUnknown(): IoAnswer {
   return {
     answer: pick([
-      "Maaf, aku lebih jago bantu kamu soal warung 😄 Coba tanya tentang omzet, transaksi, produk, atau keuntungan.",
+      "Aku lebih jago soal warung 😄 Coba tanya omzet, transaksi, produk terlaris, atau untung.",
       "Hmm, itu di luar yang aku bisa bantu. Coba tanya soal omzet, transaksi, atau produk terlaris ya.",
     ]),
   };
