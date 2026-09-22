@@ -19,10 +19,17 @@ export type Intent =
   | { type: "best_day"; range: DateRange }
   | { type: "avg_per_day"; range: DateRange }
   | { type: "compare"; metric: "omzet" | "profit"; current: DateRange; previous: DateRange }
+  | { type: "timeline" }
   | { type: "unknown" };
 
 export function parseIntent(question: string): Intent {
   const t = question.toLowerCase();
+
+  // "Perjalanan warung" / "perkembangan warung" — dicek paling awal
+  // supaya tidak kesangkut ke pola kata kunci lain.
+  if (/perjalanan warung|perkembangan warung/.test(t)) {
+    return { type: "timeline" };
+  }
 
   // "Bandingkan omzet minggu ini dengan minggu lalu" / "naik dibanding bulan lalu"
   if (/bandingkan|dibanding|dibandingkan/.test(t)) {

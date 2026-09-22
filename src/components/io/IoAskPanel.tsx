@@ -10,10 +10,11 @@ type Message = {
 };
 
 const QUICK_QUESTIONS = [
-  "Omzet hari ini berapa?",
-  "Omzet bulan ini berapa?",
-  "Transaksi minggu ini berapa?",
-  "Produk apa yang paling laku?",
+  "Omzet hari ini",
+  "Omzet bulan ini",
+  "Produk terlaris",
+  "Bandingkan bulan lalu",
+  "Perjalanan warung",
 ];
 
 // Panel "Tanya io" — sengaja dibuat sebagai kartu yang menyatu di dashboard

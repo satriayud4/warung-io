@@ -3,9 +3,10 @@
 // formal. Tidak ada perhitungan apa pun di sini, cuma menyusun kata-kata
 // dari angka yang sudah pasti benar.
 
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatTanggalSaja } from "@/lib/format";
 import type { DateRange } from "./date-parser";
 import type { OmzetData, ProfitData, TopProduct, BestDay } from "./data";
+import type { Milestone } from "./milestones";
 
 export type IoAnswer = {
   answer: string;
@@ -166,6 +167,31 @@ export function respondCompare(
       `Agak turun, ${metricLabel.toLowerCase()} ${current.label} ${Math.abs(pct)}% lebih rendah dari ${previous.label}.`,
     ]),
     breakdown,
+  };
+}
+
+export function respondTimeline(milestones: Milestone[]): IoAnswer {
+  if (milestones.length === 0) {
+    return {
+      answer: "Belum ada milestone nih. Catat transaksi pertamamu di Kasir buat mulai perjalanan warungmu 🌱",
+    };
+  }
+
+  // Diurutkan ulang di sini (bukan cuma percaya urutan input) supaya
+  // "yang terbaru" selalu benar, apa pun urutan yang dikirim pemanggil.
+  const sorted = [...milestones].sort((a, b) => a.date.localeCompare(b.date));
+  const latest = sorted[sorted.length - 1];
+  const answer =
+    sorted.length === 1
+      ? `Baru ada 1 milestone: ${latest.title} (${formatTanggalSaja(latest.date)}). Yuk terus jalan!`
+      : `Udah ada ${sorted.length} milestone di perjalanan warungmu. Yang terbaru: ${latest.title}, ${formatTanggalSaja(latest.date)}.`;
+
+  return {
+    answer,
+    breakdown: [...sorted]
+      .reverse()
+      .slice(0, 5)
+      .map((m) => ({ label: `${m.icon} ${m.title}`, value: formatTanggalSaja(m.date) })),
   };
 }
 

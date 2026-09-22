@@ -242,6 +242,20 @@ ketik ulang password lama (mengandalkan sesi login yang sudah aktif, sama
 seperti kebanyakan aplikasi lain). Kalau memang lupa password dan sedang
 tidak login sama sekali, tetap pakai alur "Lupa Password" di halaman login.
 
+## Quick question di Tanya io diperbarui
+
+Chip pertanyaan cepat sekarang: **Omzet hari ini**, **Omzet bulan ini**,
+**Produk terlaris**, **Bandingkan bulan lalu**, **Perjalanan warung**.
+
+Yang terakhir ("Perjalanan warung") sebelumnya belum ada padanannya di
+"Tanya io" — cuma tersedia sebagai card timeline terpisah. Sekarang
+ditambahkan intent baru (`timeline`) supaya tombol itu juga langsung
+dijawab di chat: io meringkas jumlah milestone dan yang terbaru, dengan
+breakdown 5 milestone terakhir di bawah jawabannya — datanya sama persis
+dengan card "Perjalanan Warung" (`computeMilestones()`), cuma beda cara
+sajinya. Diurutkan ulang berdasar tanggal di dalam `respondTimeline`
+sendiri (bukan percaya urutan input), jadi "yang terbaru" selalu benar.
+
 ## Polish gaya bicara io
 
 Kalimat jawaban io di `src/lib/io/respond.ts` dibuat lebih singkat dan

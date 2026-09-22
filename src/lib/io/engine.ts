@@ -6,6 +6,7 @@
 
 import { parseIntent } from "./intent-parser";
 import { fetchOmzetData, fetchProfitData, fetchTopProduct, fetchBestDay } from "./data";
+import { computeMilestones } from "./milestones";
 import {
   respondOmzet,
   respondTransaksiCount,
@@ -14,6 +15,7 @@ import {
   respondBestDay,
   respondAvgPerDay,
   respondCompare,
+  respondTimeline,
   respondUnknown,
   type IoAnswer,
 } from "./respond";
@@ -58,6 +60,10 @@ export async function answerQuestion(question: string): Promise<IoAnswer> {
         fetchValue(intent.previous),
       ]);
       return respondCompare(intent.metric, intent.current, intent.previous, currentValue, previousValue);
+    }
+    case "timeline": {
+      const milestones = await computeMilestones();
+      return respondTimeline(milestones);
     }
     case "unknown":
     default:
