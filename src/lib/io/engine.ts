@@ -5,10 +5,11 @@
 // bentuk Intent tetap sama jadi data.ts & respond.ts tidak perlu disentuh.
 
 import { parseIntent } from "./intent-parser";
-import { fetchOmzetData, fetchProfitData, fetchTopProduct, fetchBestDay } from "./data";
+import { fetchOmzetData, fetchProfitData, fetchTopProduct, fetchBestDay, fetchDetailedSales } from "./data";
 import { computeMilestones } from "./milestones";
 import {
   respondOmzet,
+  respondSalesDetail,
   respondTransaksiCount,
   respondProfit,
   respondTopProduct,
@@ -32,6 +33,10 @@ export async function answerQuestion(question: string): Promise<IoAnswer> {
     case "omzet": {
       const data = await fetchOmzetData(intent.range);
       return respondOmzet(intent.range, data);
+    }
+    case "sales_detail": {
+      const sales = await fetchDetailedSales(intent.range);
+      return respondSalesDetail(intent.range, sales);
     }
     case "transaksi_count": {
       const data = await fetchOmzetData(intent.range);

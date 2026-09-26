@@ -75,3 +75,44 @@ export async function fetchBestDay(range: DateRange): Promise<BestDay> {
   const best = rows.reduce((a, b) => (Number(b.omzet) > Number(a.omzet) ? b : a));
   return { date: best.sale_date, omzet: Number(best.omzet) };
 }
+
+export type DetailedSale = {
+  time: string; // ISO created_at
+  customer: string;
+  paymentMethod: string;
+  total: number;
+  items: { name: string; quantity: number }[];
+};
+
+// Dipakai kalau pengguna minta rincian ("lengkap", "detail", dst) — beda
+// dari fetchOmzetData yang cuma kasih angka ringkasan.
+export async function fetchDetailedSales(range: DateRange): Promise<DetailedSale[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("transactions")
+    .select(
+      "customer_name, payment_method, total_amount, created_at, transaction_items(product_name_snapshot, quantity)"
+    )
+    .gte("transaction_date", range.from)
+    .lte("transaction_date", range.to)
+    .order("created_at", { ascending: true });
+
+  type Row = {
+    customer_name: string;
+    payment_method: string;
+    total_amount: number;
+    created_at: string;
+    transaction_items: { product_name_snapshot: string; quantity: number }[];
+  };
+
+  return ((data ?? []) as unknown as Row[]).map((r) => ({
+    time: r.created_at,
+    customer: r.customer_name,
+    paymentMethod: r.payment_method,
+    total: Number(r.total_amount),
+    items: r.transaction_items.map((it) => ({
+      name: it.product_name_snapshot,
+      quantity: Number(it.quantity),
+    })),
+  }));
+}

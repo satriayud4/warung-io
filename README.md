@@ -242,6 +242,27 @@ ketik ulang password lama (mengandalkan sesi login yang sudah aktif, sama
 seperti kebanyakan aplikasi lain). Kalau memang lupa password dan sedang
 tidak login sama sekali, tetap pakai alur "Lupa Password" di halaman login.
 
+## Perbaikan: "lengkap/detail/rincian" sekarang benar-benar beda dari omzet biasa
+
+Bug nyata yang dilaporkan: nanya "omzet tanggal 2 September" lalu susul
+"berikan data penjualan 2 September dengan lengkap" — hasilnya sama persis
+(cuma angka ringkasan), padahal user eksplisit minta yang lengkap. io tidak
+punya cara membedakan "aku mau angka total" dari "aku mau lihat detail
+transaksinya".
+
+Sekarang ada intent baru (`sales_detail`), dipicu kata "lengkap", "detail",
+"rincian", "rinci", atau "breakdown" — dicek **sebelum** kata kunci lain,
+jadi "omzet ... lengkap" tidak lagi dianggap sama dengan "omzet" biasa.
+Jawabannya menampilkan daftar transaksi sungguhan: jam (WIB), nama
+pembeli, item & jumlah yang dibeli, total, dan metode pembayaran —
+datanya diambil langsung dari `transactions` + `transaction_items` (query
+yang sama persis dengan "Rincian Transaksi" di halaman Laporan). Kalau
+transaksinya banyak, dibatasi 12 baris + catatan "... dan N transaksi
+lainnya" supaya tidak membanjiri chat.
+
+Sudah diuji dengan data contoh (kosong & ada isi) sebelum dipasang —
+jamnya dipastikan sudah dalam WIB, bukan UTC server.
+
 ## Quick question di Tanya io diperbarui
 
 Chip pertanyaan cepat sekarang: **Omzet hari ini**, **Omzet bulan ini**,

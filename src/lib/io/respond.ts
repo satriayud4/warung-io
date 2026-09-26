@@ -3,9 +3,9 @@
 // formal. Tidak ada perhitungan apa pun di sini, cuma menyusun kata-kata
 // dari angka yang sudah pasti benar.
 
-import { formatRupiah, formatTanggalSaja } from "@/lib/format";
+import { formatRupiah, formatTanggalSaja, formatJam } from "@/lib/format";
 import type { DateRange } from "./date-parser";
-import type { OmzetData, ProfitData, TopProduct, BestDay } from "./data";
+import type { OmzetData, ProfitData, TopProduct, BestDay, DetailedSale } from "./data";
 import type { Milestone } from "./milestones";
 
 export type IoAnswer = {
@@ -44,6 +44,28 @@ export function respondOmzet(range: DateRange, data: OmzetData): IoAnswer {
       },
     ],
   };
+}
+
+export function respondSalesDetail(range: DateRange, sales: DetailedSale[]): IoAnswer {
+  if (sales.length === 0) {
+    return { answer: `Belum ada transaksi yang tercatat untuk ${range.label}.` };
+  }
+
+  const lines = sales.map((s) => {
+    const itemsText = s.items.map((it) => `${it.quantity}x ${it.name}`).join(", ");
+    const payment = s.paymentMethod === "tunai" ? "Tunai" : "Non-tunai";
+    return `• ${formatJam(s.time)} — ${s.customer}: ${itemsText} (${formatRupiah(s.total)}, ${payment})`;
+  });
+
+  const totalOmzet = sales.reduce((sum, s) => sum + s.total, 0);
+  const header = `Rincian ${range.label} — ${sales.length} transaksi, total ${formatRupiah(totalOmzet)}:`;
+
+  const MAX_LINES = 12;
+  const shown = lines.slice(0, MAX_LINES);
+  const remaining = lines.length - shown.length;
+  const body = shown.join("\n") + (remaining > 0 ? `\n… dan ${remaining} transaksi lainnya` : "");
+
+  return { answer: `${header}\n${body}` };
 }
 
 export function respondTransaksiCount(range: DateRange, data: OmzetData): IoAnswer {

@@ -13,6 +13,7 @@ import { parseDateRange, type DateRange } from "./date-parser";
 
 export type Intent =
   | { type: "omzet"; range: DateRange }
+  | { type: "sales_detail"; range: DateRange }
   | { type: "transaksi_count"; range: DateRange }
   | { type: "profit"; range: DateRange }
   | { type: "top_product"; range: DateRange }
@@ -29,6 +30,15 @@ export function parseIntent(question: string): Intent {
   // supaya tidak kesangkut ke pola kata kunci lain.
   if (/perjalanan warung|perkembangan warung/.test(t)) {
     return { type: "timeline" };
+  }
+
+  // Minta RINCIAN ("lengkap", "detail", "rincian", "breakdown") — dicek
+  // sebelum intent omzet biasa, supaya "omzet ... lengkap" atau "data
+  // penjualan ... detail" tidak dianggap sama dengan pertanyaan ringkasan
+  // biasa. Beda dari intent "omzet": ini menampilkan daftar transaksi
+  // sungguhan (jam, pembeli, item, pembayaran), bukan cuma angka total.
+  if (/\blengkap\b|\bdetail\b|\brincian\b|\bbreakdown\b|\brinci\b/.test(t)) {
+    return { type: "sales_detail", range: parseDateRange(t) ?? parseDateRange("hari ini")! };
   }
 
   // "Bandingkan omzet minggu ini dengan minggu lalu" / "naik dibanding bulan lalu"
